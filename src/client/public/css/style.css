@@ -430,7 +430,6 @@ button:active {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid grey;
     border-radius: 5px;
 }
 
@@ -463,8 +462,8 @@ button:active {
 /* front pane, placed above back */
 .front{
     z-index:2;
-
 }
+
 /* back, initially hidden pane */
 .back{
     /*transform*/
@@ -473,6 +472,7 @@ button:active {
     -ms-transform:rotateY(180deg);
     -o-transform:rotateY(180deg);
     transform:rotateY(180deg);
+    border: 1px solid grey;
 }
 
 .flipped {

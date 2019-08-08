@@ -279,11 +279,25 @@
     font-size: .9rem;
 }
 
-.poker-card-voted {
+.flipper .poker-card-front, .flipper .poker-card-back {
     height: 65px;
     width: 45px;
-    border: 1px solid black;
     border-radius: 5px;
+    /* position: relative; */
+    display: flex;
+    flex-direction: column;
+}
+
+.poker-card-front {
+    border: 1px solid black;
+}
+
+.bank {
+    position: absolute;
+    top: 92px;
+    left: 110px;
+    height: 40px;
+    width: 40px;
 }
 
 .chip {
@@ -312,24 +326,19 @@
     background-color: gold;
 }
 
-.bank .chip.v5 {
-    top: 91px;
-    right: -27px;
-}
 
 .bank .chip.v10 {
-    top: 106px;
-    right: 6px;
+    right: 3px;
 }
 
 .bank .chip.v25 {
-    top: 89px;
-    left: 111px;
+    top: 18px;
+    right: 33px;
 }
 
 .bank .chip.v50 {
-    top: 109px;
-    left: 118px;
+    top: 20px;
+    right: 10px;
 }
 
 .remove-player-btn {
@@ -474,3 +483,23 @@
     z-index: 17;
 }
 
+.poker-card-value {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.top-suit, .bottom-suit {
+    font-size: .6rem;
+}
+
+.top-suit {
+    padding: 3px 0 0 3px;
+    margin-right: auto;
+}
+
+.bottom-suit {
+    padding: 0 3px 3px 0;
+    margin-left: auto;
+}

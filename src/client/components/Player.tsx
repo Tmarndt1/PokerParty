@@ -67,7 +67,7 @@ export default class Player extends React.Component<IProps, IState> {
                         <React.Fragment>
                             <img src={card} className={"poker-card is-user"} onClick={this.vote} ref={this.cardRef}/>
                             <img src={card} className={"poker-card"}/>
-                            <img src={card} className={"poker-card"}/>
+                            <img src={card} className={"poker-card"} style={{boxShadow: "0 0 3px white"}}/>
                         </React.Fragment>
                         : null
                     }
@@ -106,7 +106,7 @@ export default class Player extends React.Component<IProps, IState> {
                         <React.Fragment>
                             <img src={card} className="poker-card"/>
                             <img src={card} className={"poker-card"}/>
-                            <img src={card} className={"poker-card"}/>
+                            <img src={card} className={"poker-card"} style={{boxShadow: "0 0 3px white"}}/>
                         </React.Fragment> 
                         : null
                     }

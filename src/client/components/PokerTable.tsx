@@ -8,6 +8,7 @@ import { isNullOrUndefined } from "util";
 import PokerItem, { IPokerItem } from "../../shared/models/PokerItem";
 import { IAppContext, AppContext } from "../contexts/AppContext";
 import { IPartyJSON } from "../../shared/models/Party";
+import PokerCard from "./PokerCard";
 
 const card = require("../public/images/card.png");
 
@@ -37,7 +38,7 @@ export default class PokerTable extends React.Component<IProps, IState> {
             flipped: false,
             flipping: false,
             countDown: null,
-            pokerItem: null
+            pokerItem: null,
         }
     }
 
@@ -61,7 +62,11 @@ export default class PokerTable extends React.Component<IProps, IState> {
                 <div id="poker-table">
                     <div id="table-name">{this.props.user.partyName}</div>
                     <div id="cards-place">
-                        {this.getCards()}
+                        {
+                            this.state.players.map(player => {
+                                return <PokerCard player={player} flipped={this.state.flipped}/>
+                            })
+                        }
                     </div>
                     <div id="players">
                         {placeHolders}
@@ -145,7 +150,7 @@ export default class PokerTable extends React.Component<IProps, IState> {
             players: this.state.players,
             flipped: false,
             flipping: false,
-            countDown: null
+            countDown: null,
         });
 
         this.context.closeModal();
@@ -157,11 +162,18 @@ export default class PokerTable extends React.Component<IProps, IState> {
         let countDown = 6;
 
         this.state.players.forEach((p: PokerPlayer) => {
-            if (p.id == player.id) {
-                p.mirror(player);
-            }
+            if (p.id == player.id) p.mirror(player);
             if (p.voted === false) allVoted = false;
         });
+
+
+        this.setState({
+            players: this.state.players,
+            countDown: countDown,
+            flipping: allVoted,
+        });
+
+        this.context.closeModal();
 
         if (allVoted) {
             let func: any = setInterval(() => {
@@ -178,43 +190,10 @@ export default class PokerTable extends React.Component<IProps, IState> {
 
                 this.setState({
                     countDown: countDown,
-                    flipped: (countDown === 0)
+                    flipped: (countDown === 0),
                 });
             }, 1000);
         }
-
-        this.setState({
-            players: this.state.players,
-            countDown: countDown,
-            flipping: allVoted
-        });
-
-        this.context.closeModal();
-    }
-
-    private getCards = (): JSX.Element[] => {
-        let cards: Array<JSX.Element> = [];
-        let flippedClass = this.state.flipped ? "flipped" : "";
-
-        this.state.players.forEach((player: PokerPlayer) => {
-            if (player.voted === true && String.isNullOEmpty(player.vote) === false) {  
-                // flippedClass += (" seat-" + player.seatNumber.toString());             
-                let jsx = <div className="flip-container">
-                    <div className={("flipper " + flippedClass)}>
-                        <div className="front">
-                            <img src={card} className="poker-card-voted"/>
-                        </div>
-                        <div className={flippedClass + " back"}>
-                            {player.vote}
-                        </div>
-                    </div>
-                </div>
-
-                cards.push(jsx);
-            }
-        });
-    
-        return cards;
     }
 
     private itemSubmitted = (item: IPokerItem): void => { 
