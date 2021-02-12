@@ -3,14 +3,14 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="Poker-Library/Models/Party.cs">
     <Files>
       <File FileName="Poker-Library/JsonConverters/PartyConverter.cs" Line="11" Column="6" />
-      <File FileName="Poker-Library/Models/Player.cs" Line="22" Column="33" />
+      <File FileName="Poker-Library/Models/Player.cs" />
       <File FileName="Poker-Library/Models/Party.cs" Line="20" Column="34" />
-      <File FileName="Poker-Library/PokerHub.cs" Line="51" Column="47" />
-      <File FileName="Poker-Library/WebService.cs" Line="18" Column="1" />
-      <File FileName="Poker-Library/JsonResponses/JsonResponse.cs" Line="8" Column="1" />
-      <File FileName="Poker-Library/Controller.cs" Line="22" Column="1" />
-      <File FileName="Poker-Library/DataModel.cs" Line="14" Column="15" />
-      <File FileName="Poker-Library/JsonConverters/PlayerConverter.cs" Line="22" Column="10" />
+      <File FileName="Poker-Library/PokerHub.cs" />
+      <File FileName="Poker-Library/WebService.cs" />
+      <File FileName="Poker-Library/JsonResponses/JsonResponse.cs" />
+      <File FileName="Poker-Library/Controller.cs" />
+      <File FileName="Poker-Library/DataModel.cs" />
+      <File FileName="Poker-Library/JsonConverters/PlayerConverter.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
