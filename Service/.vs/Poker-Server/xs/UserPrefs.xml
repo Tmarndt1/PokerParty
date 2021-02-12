@@ -1,0 +1,37 @@
+﻿<Properties StartupConfiguration="{6385BCA2-ECAB-4E98-9B7C-5FF3E89EFA5D}|Default">
+  <MonoDevelop.Ide.ItemProperties.Poker-Console PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Poker-Library/Models/Party.cs">
+    <Files>
+      <File FileName="Poker-Library/JsonConverters/PartyConverter.cs" Line="11" Column="6" />
+      <File FileName="Poker-Library/Models/Player.cs" Line="22" Column="33" />
+      <File FileName="Poker-Library/Models/Party.cs" Line="20" Column="34" />
+      <File FileName="Poker-Library/PokerHub.cs" Line="51" Column="47" />
+      <File FileName="Poker-Library/WebService.cs" Line="18" Column="1" />
+      <File FileName="Poker-Library/JsonResponses/JsonResponse.cs" Line="8" Column="1" />
+      <File FileName="Poker-Library/Controller.cs" Line="22" Column="1" />
+      <File FileName="Poker-Library/DataModel.cs" Line="14" Column="15" />
+      <File FileName="Poker-Library/JsonConverters/PlayerConverter.cs" Line="22" Column="10" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Poker-Server" expanded="True">
+            <Node name="Poker-Console" expanded="True" />
+            <Node name="Poker-Library" expanded="True">
+              <Node name="JsonConverters" expanded="True" />
+              <Node name="Models" expanded="True">
+                <Node name="Party.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

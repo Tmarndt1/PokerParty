@@ -1,0 +1,17 @@
+/Users/travisarndt/Projects/Poker-Party/server/Poker-Server/Poker-Library/bin/Debug/netcoreapp3.1/Poker-Library.deps.json
+/Users/travisarndt/Projects/Poker-Party/server/Poker-Server/Poker-Library/bin/Debug/netcoreapp3.1/Poker-Library.dll
+/Users/travisarndt/Projects/Poker-Party/server/Poker-Server/Poker-Library/bin/Debug/netcoreapp3.1/Poker-Library.pdb
+/Users/travisarndt/Projects/Poker-Party/server/Poker-Server/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.csproj.CoreCompileInputs.cache
+/Users/travisarndt/Projects/Poker-Party/server/Poker-Server/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.AssemblyInfoInputs.cache
+/Users/travisarndt/Projects/Poker-Party/server/Poker-Server/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.AssemblyInfo.cs
+/Users/travisarndt/Projects/Poker-Party/server/Poker-Server/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.dll
+/Users/travisarndt/Projects/Poker-Party/server/Poker-Server/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.pdb
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/bin/Debug/netcoreapp3.1/Poker-Library.deps.json
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/bin/Debug/netcoreapp3.1/Poker-Library.dll
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/bin/Debug/netcoreapp3.1/Poker-Library.pdb
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.csprojAssemblyReference.cache
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.AssemblyInfoInputs.cache
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.AssemblyInfo.cs
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.csproj.CoreCompileInputs.cache
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.dll
+/Users/travisarndt/Projects/Poker-Party/Service/Poker-Library/obj/Debug/netcoreapp3.1/Poker-Library.pdb
