@@ -1,11 +1,11 @@
 import * as React from "react";
-import Player from "../models/Player";
+import { Player } from "../models/Player";
 
 interface IProps {
     user: Player;
 };
 
-interface IState {};
+interface IState { };
 
 export default class Header extends React.Component<IProps, IState> {
     headerRef: React.RefObject<HTMLDivElement>;
@@ -18,9 +18,7 @@ export default class Header extends React.Component<IProps, IState> {
     public render = (): JSX.Element => {
         return (
             <div id="header" ref={this.headerRef}>
-                <div style={{paddingTop: 20}}>
-                    {"Poker Party"}
-                </div>
+                Agile Poker
             </div>
         )
     }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import Player from "../models/Player";
+import { Player } from "../models/Player";
 
 const card = require("../public/images/card.png");
 
@@ -33,15 +33,15 @@ export default class PokerCard extends React.Component<IProps, IState> {
 
     public render = (): JSX.Element => {
         return (
-            <div className="flip-container">
+            <div className="flip-container" draggable={false} style={{pointerEvents: "none"}}>
                 <div className={this.state.flipped === true ? "flipper flipped" : "flipper"}>
                     <div className="front">
                         <img src={card} className="poker-card-front"/>
                     </div>
                     <div className="back">
-                        {
-                            this.getBackOfCard()
-                        }
+                    {
+                        this.getBackOfCard()
+                    }
                     </div>
                 </div>
             </div>

@@ -1,0 +1,39 @@
+.tab-container {
+    display: flex;
+    margin-top: auto;
+    user-select: none;
+}
+
+.tab {
+    cursor: pointer;
+    position: relative;
+    padding: 1rem;
+    width: max-content;
+    color: #6c757d;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+}
+
+.tab.active {
+    color: dodgerblue;
+}
+
+.tab.active::after {
+    position: absolute;
+    content: "";
+    height: 2px;
+    width: 98%;
+    background: dodgerblue !important;
+    bottom: -2px;
+    left: 0;
+}
+
+.tab:hover::after {
+    position: absolute;
+    content: "";
+    height: 2px;
+    width: 98%;
+    background: #6c757d;
+    bottom: -2px;
+    left: 0;
+}

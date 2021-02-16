@@ -1,9 +1,15 @@
 import * as React from "react";
-import Player from "../models/Player";
+import { Player } from "../models/Player";
 import IModalData from "../interfaces/IModalData";
-import Party from "../models/Party";
+import { Party } from "../models/Party";
+
+export enum Theme {
+    Dark,
+    Light
+}
 
 export interface IAppContext {
+    theme: Theme;
     isAdmin: boolean;
     user: Player; 
     party: Party;
@@ -15,6 +21,7 @@ export interface IAppContext {
 }
 
 const contextObject: IAppContext = {
+    theme: Theme.Light,
     isAdmin: false,
     user: null,
     party: null,

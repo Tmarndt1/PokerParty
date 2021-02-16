@@ -27,7 +27,7 @@ namespace Poker.Library.JsonConverters
                 new JProperty("name", value.Name),
                 new JProperty("pokerItem", value.PokerItem),
                 new JProperty("voting", value.Voting),
-                new JProperty("members", value.Members.Values.Select(member => PlayerConverter.ToJObject(member)))
+                new JProperty("members", value.Members.Select(member => PlayerConverter.ToJObject(member)))
             };
         }
     }

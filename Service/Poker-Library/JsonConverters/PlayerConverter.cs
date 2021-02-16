@@ -25,6 +25,7 @@ namespace Poker.Library.JsonConverters
                 new JProperty("id", value.ID),
                 new JProperty("username", value.Username),
                 new JProperty("isAdmin", value.IsAdmin),
+                new JProperty("isActive", value.IsActive),
                 new JProperty("seatNumber", value.SeatNumber),
                 new JProperty("v5Count", value.V5Count),
                 new JProperty("v10Count", value.V10Count),

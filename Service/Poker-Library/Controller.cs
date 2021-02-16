@@ -1,5 +1,6 @@
 ﻿using System;
 using Poker.Library.Models;
+using Poker.Library.Utilities;
 
 namespace Poker.Library
 {
@@ -9,64 +10,54 @@ namespace Poker.Library
 
         private Controller() { }
 
-        public InitialResponse TryStart(string connectionId, string username, string password, string partyName)
+        public Result<InitialResponse> TryStart(string connectionId, string username, string password, string partyName)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password)
                 || string.IsNullOrWhiteSpace(partyName) || string.IsNullOrWhiteSpace(connectionId))
             {
-                return new InitialResponse()
-                {
-                    Success = false
-                };
+                return new Result<InitialResponse>(false, "Bad request");
             }
 
             Player admin = Player.Factory(username, connectionId, true);
 
             Party party = Party.Start(partyName, password, admin);
 
-            if (!DataModel.Instance.TryStart(party, admin))
+            Result result = DataModel.Instance.TryStart(party, admin);
+
+            if (!result.Success)
             {
-                return new InitialResponse()
-                {
-                    Success = false
-                };
+                return new Result<InitialResponse>(false, result.Error);
             }
 
-            return new InitialResponse()
+            return new Result<InitialResponse>(true, "", new InitialResponse()
             {
-                Success = true,
                 Party = party,
                 User = admin
-            };
+            });
         }
 
-        public InitialResponse TryJoin(string connectionId, string username, string password, string partyName)
+        public Result<InitialResponse> TryJoin(string connectionId, string username, string password, string partyName)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password)
                 || string.IsNullOrWhiteSpace(partyName) || string.IsNullOrWhiteSpace(connectionId))
             {
-                return new InitialResponse()
-                {
-                    Success = false
-                };
+                return new Result<InitialResponse>(false, "Bad request");
             }
 
             Player player = Player.Factory(username, connectionId);
 
-            if (!DataModel.Instance.TryJoin(password, partyName, player, out Party party))
+            Result result = DataModel.Instance.TryJoin(password, partyName, player, out Party party);
+
+            if (!result.Success)
             {
-                return new InitialResponse()
-                {
-                    Success = false
-                };
+                return new Result<InitialResponse>(false, result.Error);
             }
 
-            return new InitialResponse()
+            return new Result<InitialResponse>(true, "", new InitialResponse()
             {
-                Success = true,
                 Party = party,
                 User = player
-            };
+            });
         }
     }
 }

@@ -3,10 +3,9 @@ import { IAppContext, AppContext } from "../contexts/AppContext";
 import PokerItem, { IPokerItem } from "../models/PokerItem";
 import { Guid } from "../utilitites/common";
 import { isNullOrUndefined } from "util";
-import Player from "../models/Player";
+import { Player } from "../models/Player";
 import { SignalREvent, SignalRService } from "../services/SignalRService";
-import Party, { IParty } from "../models/Party";
-import PartyFactory from "../factories/PartyFactory";
+import { Party, IParty } from "../models/Party";
 import { isNothing } from "../utilitites/isNothing";
 
 interface IProps {
@@ -151,7 +150,7 @@ export default class ContentContainer extends React.Component<IProps, IState> {
     private itemSubmitted = (json: IParty): void => {  
         if (isNullOrUndefined(json)) return;
 
-        let party: Party = new PartyFactory().fromJson(json);
+        let party: Party = new Party(json);
 
         this.setState({
             title: party.pokerItem.title,

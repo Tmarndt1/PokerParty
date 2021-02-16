@@ -1,0 +1,70 @@
+:root {
+    --light-theme-border-color: lightgrey;
+    --light-theme-box-shaddow-color: lightgrey;
+    --light-theme-input-color: rgba(255, 255, 255, .9);
+
+    --dark-theme-border-color: rgba(255, 255, 255, 0.12);
+    --dark-theme-box-shaddow-color: #202020;
+    --dark-theme-input-color: #292929;
+}
+
+.text-field-container, .text-area-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.text-field, .text-area {
+    border-radius: 5px;
+    border: 1px solid var(--dark-theme-border-color);
+    font-size: 1rem;
+    outline: none;
+    padding-left: 5px;
+    position: relative;
+    background-color: var(--dark-theme-input-color);
+    font-family: var(--font-family);
+    caret-color: var(--dark-theme-font-color);
+    color: var(--dark-theme-font-color);
+}
+
+.text-field-container > label, .text-area-container > label {
+    margin-bottom: .5rem;
+    font-weight: 400;
+    color: grey;
+}
+
+.text-field {
+    min-height: 40px;
+}
+
+.text-area {
+    padding-top: 5px;
+    min-height: 100px;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: grey;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: grey;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: grey;
+}
+
+input:-webkit-autofill, input:-internal-autofill-selected {
+    -webkit-text-fill-color: var(--dark-theme-font-color)
+}
+
+input:focus, textarea:focus {
+    /* box-shadow: 0 0 4px dodgerblue; */
+    border: 1px solid dodgerblue;
+}
+
+input:-internal-autofill-selected, textarea:-internal-autofill-selected {
+    background-color: rgb(232, 240, 254) !important;
+    background-image: none !important;
+    color: var(--dark-theme-font-color) !important;
+}

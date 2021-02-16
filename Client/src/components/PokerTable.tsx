@@ -1,14 +1,12 @@
 import * as React from "react";
-import Player, { IPlayer } from "../models/Player";
+import { Player } from "../models/Player";
 import PlayerComponent from "./PlayerComponent";
 import { isNullOrUndefined } from "util";
-import PokerItem, { IPokerItem } from "../models/PokerItem";
 import { IAppContext, AppContext } from "../contexts/AppContext";
 import PokerCard from "./PokerCard";
 import Modal from "./Modal";
 import VoteComponent from "./VoteComponent";
-import Party, { IParty } from "../models/Party";
-import PartyFactory from "../factories/PartyFactory";
+import { Party, IParty } from "../models/Party";
 import { SignalRService, SignalREvent } from "../services/SignalRService";
 
 const card = require("../public/images/card.png");
@@ -31,6 +29,8 @@ interface IState {
 export default class PokerTable extends React.Component<IProps, IState> {
     public context: IAppContext;
     public static contextType = AppContext;
+    private playersRef: React.RefObject<HTMLDivElement> = React.createRef();
+    private playersWidth: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -47,7 +47,7 @@ export default class PokerTable extends React.Component<IProps, IState> {
 
     public render = (): JSX.Element => {
         let average: number = this.state.party.voting ? 
-            this.getAvg(this.state.party.members.filter(x => x.active).map(x => parseInt(x.vote))) : null;
+            this.getAvg(this.state.party.members.filter(x => x.isActive).map(x => parseInt(x.vote))) : null;
 
         return (
             <div id="poker-table-body">
@@ -65,33 +65,36 @@ export default class PokerTable extends React.Component<IProps, IState> {
                 <div id="poker-table">
                     <div id="table-name">{ this.props.party.name }</div>
                     <div id="cards-place">
-                        {
-                            this.state.party.members.filter(x => x.active && x.voted).map(player => {
-                                return <PokerCard key={player.id} player={player} flipped={this.state.flipped}/>
-                            })
-                        }
-                        {
-                            this.state.user.admin == true && this.state.flipped == true ? 
-                            <div id="reset-container" onClick={this.revote}>
-                                <i className="fas fa-undo-alt"></i>
-                            </div>
-                            : null
-                        }
+                    {
+                        this.state.party.members.filter(x => x.isActive && x.voted).map(player => {
+                            return <PokerCard key={player.id} player={player} flipped={this.state.flipped}/>
+                        })
+                    }
+                    {
+                        this.state.user.isAdmin == true && this.state.flipped == true ? 
+                        <div id="reset-container" onClick={this.revote}>
+                            <i className="fas fa-undo-alt"></i>
+                        </div> : null
+                    }
                     </div>
-                    <div id="players">
-                        {
-                            this.state.party.members.map(player => {
-                                return <PlayerComponent key={player.id} player={player} isUser={(this.props.user.id === player.id)} 
-                                pokerItem={this.state.party.pokerItem}
-                                voteHandler={() => this.setState({voting: true})} party={this.state.party}/>
-                            })
-                        }
+                    <div id="players" ref={this.playersRef}>
+                    {
+                        this.state.party.members.map(player => {
+                            return (
+                                <PlayerComponent key={player.id} player={player} 
+                                    isUser={(this.props.user.id === player.id)} 
+                                    pokerItem={this.state.party.pokerItem}
+                                    voteHandler={() => this.setState({voting: true})} 
+                                    party={this.state.party}/>
+                            )
+                        })
+                    }
                     </div>
                     <div id="average-container">
-                        {
-                            this.state.flipped == true ? 
-                            <span>Average: { isNaN(average) ? "?" : average } </span> : null
-                        }
+                    {
+                        this.state.flipped == true ? 
+                        <span>Average: { isNaN(average) ? "?" : average } </span> : null
+                    }
                     </div>
                 </div>
             </div>
@@ -106,6 +109,8 @@ export default class PokerTable extends React.Component<IProps, IState> {
         SignalRService.getInstance().subscribe(SignalREvent.Reset, this.reset);
         SignalRService.getInstance().subscribe(SignalREvent.RevoteItem, this.reset);
         SignalRService.getInstance().subscribe(SignalREvent.PlayerAdded, this.playerAdded);
+
+        this.playersWidth = this.playersRef.current.clientWidth;
     }
 
     private removePlayer = (player: Player): void => {
@@ -115,15 +120,14 @@ export default class PokerTable extends React.Component<IProps, IState> {
                 break;
             }
         }
-        this.setState({
-            party: this.state.party
-        });
+
+        this.setState({ party: this.state.party });
     }
 
     private setPlayersVote = (json: IParty) => {
         let countDown: number = 3;
-        let party: Party = new PartyFactory().fromJson(json);
-        let allVoted: boolean = party.members.filter(x => x.active === true).every(x => x.voted === true);
+        let party: Party = new Party(json);
+        let allVoted: boolean = party.members.filter(x => x.isActive === true).every(x => x.voted === true);
         
         this.setState({
             party: party,
@@ -153,7 +157,7 @@ export default class PokerTable extends React.Component<IProps, IState> {
     }
 
     private itemSubmitted = (json: IParty): void => { 
-        let party: Party = new PartyFactory().fromJson(json);
+        let party: Party = new Party(json);
 
         this.setState({
             party: party,
@@ -172,7 +176,7 @@ export default class PokerTable extends React.Component<IProps, IState> {
     private reset = (json: IParty): void => {
         if (isNullOrUndefined(json)) return;
         
-        let party: Party = new PartyFactory().fromJson(json);
+        let party: Party = new Party(json);
 
         this.setState({
             party: party,
@@ -186,7 +190,7 @@ export default class PokerTable extends React.Component<IProps, IState> {
     private playerAdded = (json: IParty): void => {
         if (isNullOrUndefined(json)) return;
         
-        let party: Party = new PartyFactory().fromJson(json);
+        let party: Party = new Party(json);
 
         this.setState({
             party: party,
@@ -207,9 +211,8 @@ export default class PokerTable extends React.Component<IProps, IState> {
     }
 
     private updateParty = (json: IParty): void => {
-        let party = new PartyFactory().fromJson(json);
         this.setState({
-            party: party
+            party: new Party(json)
         });
     }
 }

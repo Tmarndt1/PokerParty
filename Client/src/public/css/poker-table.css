@@ -1,13 +1,15 @@
 #poker-table-body {
-    height: 100%;
-    width: 73%;
+    height: calc(100% - 55px);
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
+    animation: fadeIn 1s;
 }
 
 #poker-table {
+    margin: auto;
     min-width: 850px;
     width: calc(100% - 180px);
     height: 400px;
@@ -15,6 +17,7 @@
     border-radius: 150px;
     position: relative;
     border: 15px solid #a95555;
+    max-width: 1050px;
 }
 
 #poker-table::before {
@@ -45,7 +48,7 @@
 #cards-place {
     border: 5px solid #63c763;
     height: 100px;
-    width: 450px;
+    min-width: 580px;
     position: absolute;
     border-radius: 10px;
     top: 50%;
@@ -54,19 +57,20 @@
     transform: translateX(-50%) translateY(-50%);
     box-sizing: border-box;
     display: flex;
+    align-items: center;
     z-index: 1001;
 }
 
 #cards-place > div {
-    margin: 10px 5px 10px 5px;
+    margin: 5px;
 }
 
 #cards-place > div:first-child {
-    margin: 10px 5px 10px 10px !important;
+    margin-left: 10px;
 }
 
 #cards-place > div:last-child {
-    margin: 10px 10px 10px 5px;
+    margin-right: 10px;
 }
 
 #players {
@@ -80,7 +84,6 @@
     position: absolute;
 }
 
-
 .avatar {
     width: 120px;
     height: 120px;
@@ -91,7 +94,7 @@
 }
 
 .player.inactive {
-    opacity: .4;
+    opacity: .2;
 }
 
 .avatar::after {
@@ -119,27 +122,19 @@
     background-color: lightcoral;
 }
 
-.seat-1 {
-    color: lightcoral;
-}
-
 #player2 {
     top: 0;
-    left: 25%;
+    left: 20%;
     transform: translateX(-50%) translateY(-50%);
 }
 
 #player2 > .avatar {
-    background-color: rgb(68, 68, 68);
-}
-
-.seat-2 {
-    color: rgb(68, 68, 68);
+    background-color: lightslategray;
 }
 
 #player3 {
     top: 0;
-    left: 50%;
+    left: 40%;
     transform: translateX(-50%) translateY(-50%);
 }
 
@@ -147,55 +142,47 @@
     background-color: dodgerblue;
 }
 
-.seat-3 {
-    color: dodgerblue;
-}
-
 #player4 {
     top: 0;
-    left: 75%;
+    left: 60%;
     transform: translateX(-50%) translateY(-50%);
 }
 
 #player4 > .avatar {
-    background-color: goldenrod;
-}
-
-.seat-4 {
-    color: goldenrod;
+    background-color: orange;
 }
 
 #player5 {
-    top: 50%;
-    right: 0;
-    transform: translateX(50%) translateY(-50%) rotate(90deg);
+    top: 0%;
+    left: 80%;
+    transform: translateX(-50%) translateY(-50%);
 }
 
 #player5 > .avatar {
     background-color: crimson;
 }
 
-.seat-5 {
-    color: crimson;
+#player7 > .player-name, #player8 > .player-name, #player9 > .player-name, #player10 > .player-name {
+    transform: rotate(180deg);
 }
 
 #player6 {
-    bottom: 0;
-    left: 75%;
-    transform: translateX(-50%) translateY(50%) rotateZ(180deg);
+    top: 50%;
+    right: 0;
+    transform: translateX(50%) translateY(-50%) rotate(90deg);
+}
+
+#player6 > .player-name {
+    transform: rotate(180deg);
 }
 
 #player6 > .avatar {
     background-color: forestgreen;
 }
 
-.seat-6 {
-    color: forestgreen;
-}
-
 #player7 {
     bottom: 0;
-    left: 50%;
+    left: 80%;
     transform: translateX(-50%) translateY(50%) rotate(180deg);
 }
 
@@ -203,25 +190,37 @@
     background-color: cyan;
 }
 
-.seat-7 {
-    color: cyan;
-}
-
 #player8 {
     bottom: 0;
-    left: 25%;
+    left: 60%;
     transform: translateX(-50%) translateY(50%) rotateZ(180deg);
 }
 
 #player8 > .avatar {
+    background-color: plum;
+}
+
+#player9 {
+    bottom: 0;
+    left: 40%;
+    transform: translateX(-50%) translateY(50%) rotateZ(180deg);
+}
+
+#player9 > .avatar {
+    background-color: antiquewhite;
+}
+
+#player10 {
+    bottom: 0;
+    left: 20%;
+    transform: translateX(-50%) translateY(50%) rotateZ(180deg);
+}
+
+#player10 > .avatar {
     background-color: gold;
 }
 
-.seat-8 {
-    color: gold;
-}
-
-.name {
+.player-name {
     text-align: center;
     width: 100px;
     color: #96e296;
@@ -231,10 +230,11 @@
     border: 2px solid #96e296;
     border-radius: 5px;
     margin-top: 15px;
-    font-size: .9rem;
+    font-size: 1rem;
     overflow: hidden;
     position: relative;
     min-height: 30px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .poker-card {
@@ -445,52 +445,52 @@
 }
 
 #player2 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1), #player3 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1), 
-#player4 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1) {
+#player4 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1), #player5 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1){
     bottom: -2px !important;
     z-index: 19;
 }
 
 #player2 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2), #player3 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2), 
-#player4 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2) {
+#player4 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2), #player5 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2){
     bottom: -4px !important;
     z-index: 18;
 }
 
 #player2 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3), #player3 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3), 
-#player4 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3) {
+#player4 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3), #player5 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3){
     bottom: -6px !important;
     z-index: 17;
 }
 
-#player5 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1) {
+#player6 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1) {
     left: -8px !important;
     z-index: 19;
 }
 
-#player5 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2) {
+#player6 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2) {
     left: -6px !important;
     z-index: 18;
 }
 
-#player5 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3) {
+#player6 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3) {
     left: -4px !important;
     z-index: 17;
 }
 
-#player6 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1), #player7 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1), 
-#player8 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1) {
+#player7 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1), #player8 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1), 
+#player9 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1), #player10 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(1) {
     bottom: 2px !important;
     z-index: 19;
 }
 
-#player6 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2), #player7 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2), 
-#player8 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2) {
+#player7 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2), #player8 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2), 
+#player9 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2), #player10 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(2) {
     bottom: 4px !important;
     z-index: 18;
 }
 
-#player6 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3), #player7 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3), 
-#player8 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3) {
+#player7 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3), #player8 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3), 
+#player9 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3), #player10 .vote-cards-container .vote-cards-inside-container .poker-card:nth-child(3) {
     bottom: 6px !important;
     z-index: 17;
 }

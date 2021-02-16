@@ -1,5 +1,5 @@
 import * as React from "react";
-import Player from "../models/Player";
+import { Player } from "../models/Player";
 import PokerItem from "../models/PokerItem";
 import { IAppContext, AppContext } from "../contexts/AppContext";
 import CardSuit from "../enums/CardSuit";

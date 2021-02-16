@@ -8,13 +8,6 @@ export enum CardSuit {
     Spades
 }
 
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-}
-
 export interface ILastVote {
     itemId: string;
     vote: string;
@@ -23,12 +16,12 @@ export interface ILastVote {
 export interface IPlayer {
     id: string;
     username: string;
-    active: boolean;
-    vote: string;
+    isActive: boolean;
     isAdmin: boolean;
     partyName: string;
-    socketId?: string;
+    connectionId?: string;
     voted: boolean;
+    vote: string;
     seatNumber: number;
     v5Count: number;
     v10Count: number;
@@ -36,18 +29,17 @@ export interface IPlayer {
     v50Count: number;
     lastVote: ILastVote;
     voteSuit: CardSuit;
-    [key: string]: any;
 }
 
-export default class Player implements IPlayer {
+export class Player implements IPlayer {
     public id: string;
     public username: string;
-    public active: boolean;
-    public vote: string;
+    public isActive: boolean;
     public isAdmin: boolean;
     public partyName: string;
-    public socketId: string;
+    public connectionId: string;
     public voted: boolean;
+    public vote: string;
     public seatNumber: number;
     public v5Count: number;
     public v10Count: number;
@@ -55,19 +47,18 @@ export default class Player implements IPlayer {
     public v50Count: number;
     public lastVote: ILastVote;
     public voteSuit: CardSuit;
-    [key: string]: any;
 
     constructor(json: IPlayer = null) {
         if (isNullOrUndefined(json)) return;
         
         this.id = json.id;
         this.username = json.username;
-        this.active = json.active;
+        this.isActive = json.isActive;
         this.vote = json.vote;
         this.voted = json.voted;
         this.isAdmin = json.isAdmin;
         this.partyName = json.partyName;
-        this.socketId = json.socketId;
+        this.connectionId = json.connectionId;
         this.seatNumber = json.seatNumber;
         this.v5Count = json.v5Count;
         this.v10Count = json.v10Count;
@@ -76,9 +67,7 @@ export default class Player implements IPlayer {
         this.voteSuit = json.voteSuit;
     }
 
-    public clone = (): Player => {
-        return new Player(this.toJson());
-    }
+    public clone = (): Player => new Player(this);
 
     public castVote = (vote: string, v5Count: number, v10Count: number,
         v25Count: number, v50Count: number, voteSuite: number): void => {
@@ -103,11 +92,5 @@ export default class Player implements IPlayer {
 
     public setSeat = (seatNumber: number) => this.seatNumber = seatNumber;
 
-    public setActive = (active: boolean) => this.active = active;
-    
-    public mirror = (player: IPlayer): void => {
-        Object.keys(this).forEach((key: string) => {
-            if (!isNullOrUndefined(player[key]) && typeof player[key] !== "function") this[key] = player[key];
-        });
-    }
+    public setActive = (active: boolean) => this.isActive = active;
 }

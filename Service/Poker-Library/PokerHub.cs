@@ -7,6 +7,7 @@ using Poker.Library.JsonConverters;
 using Poker.Library.JsonRequests;
 using Poker.Library.JsonResponses;
 using Poker.Library.Models;
+using Poker.Library.Utilities;
 
 namespace Poker.Library
 {
@@ -36,16 +37,16 @@ namespace Poker.Library
         [HubMethodName("Start")]
         public JsonResponse<JObject> Start(StartOrJoinRequest request)
         {
-            InitialResponse response = Controller.Instance.TryStart(Context.ConnectionId,
+            Result<InitialResponse> result = Controller.Instance.TryStart(Context.ConnectionId,
                 request.Username, request.Password, request.PartyName);
 
-            if (!response.Success) return new JsonResponse<JObject>(false, null, "Failed to start the poker party");
+            if (!result.Success) return new JsonResponse<JObject>(false, null, result.Error);
 
             StartResponse data = new StartResponse()
             {
                 Started = true,
-                Party = response.Party,
-                User = response.User
+                Party = result.Data.Party,
+                User = result.Data.User
             };
 
             return new JsonResponse<JObject>()
@@ -58,16 +59,16 @@ namespace Poker.Library
         [HubMethodName("Join")]
         public JsonResponse<JObject> Join(StartOrJoinRequest request)
         {
-            InitialResponse response = Controller.Instance.TryJoin(Context.ConnectionId,
+            Result<InitialResponse> result = Controller.Instance.TryJoin(Context.ConnectionId,
                 request.Username, request.Password, request.PartyName);
 
-            if (!response.Success) return new JsonResponse<JObject>(false, null, "Failed to join the poker party");
+            if (!result.Success) return new JsonResponse<JObject>(false, null, result.Error);
 
             JoinResponse data = new JoinResponse()
             {
                 Joined = true,
-                Party = response.Party,
-                User = response.User
+                Party = result.Data.Party,
+                User = result.Data.User
             };
 
             return new JsonResponse<JObject>()

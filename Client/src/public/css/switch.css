@@ -17,12 +17,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    /* background-color: #e3e3e3; */
     -webkit-transition: .4s;
     transition: .4s;
     height: 30px;
     border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, .12);
+    border: 1px solid grey;
 }
   
 .slider:before {
@@ -36,7 +35,7 @@
     -webkit-transition: .4s;
     transition: .4s;
     border-radius: 50%;
-    border: 1px solid black;
+    border: 1px solid grey;
 }
   
 input:checked + .slider {

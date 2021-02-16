@@ -1,16 +1,17 @@
 ﻿<Properties StartupConfiguration="{6385BCA2-ECAB-4E98-9B7C-5FF3E89EFA5D}|Default">
   <MonoDevelop.Ide.ItemProperties.Poker-Console PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Poker-Library/Models/Party.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Poker-Library/Models/PokerItem.cs">
     <Files>
-      <File FileName="Poker-Library/JsonConverters/PartyConverter.cs" Line="11" Column="6" />
-      <File FileName="Poker-Library/Models/Player.cs" />
-      <File FileName="Poker-Library/Models/Party.cs" Line="20" Column="34" />
+      <File FileName="Poker-Library/Models/Player.cs" Line="85" Column="35" />
       <File FileName="Poker-Library/PokerHub.cs" />
       <File FileName="Poker-Library/WebService.cs" />
       <File FileName="Poker-Library/JsonResponses/JsonResponse.cs" />
       <File FileName="Poker-Library/Controller.cs" />
       <File FileName="Poker-Library/DataModel.cs" />
-      <File FileName="Poker-Library/JsonConverters/PlayerConverter.cs" />
+      <File FileName="Poker-Library/Utilities/Result.cs" />
+      <File FileName="Poker-Library/Models/InitialResponse.cs" Line="10" Column="1" />
+      <File FileName="Poker-Library/Models/Party.cs" Line="54" Column="1" />
+      <File FileName="Poker-Library/Models/PokerItem.cs" Line="14" Column="24" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -18,10 +19,10 @@
           <Node name="Poker-Server" expanded="True">
             <Node name="Poker-Console" expanded="True" />
             <Node name="Poker-Library" expanded="True">
-              <Node name="JsonConverters" expanded="True" />
               <Node name="Models" expanded="True">
-                <Node name="Party.cs" selected="True" />
+                <Node name="PokerItem.cs" selected="True" />
               </Node>
+              <Node name="Utilities" expanded="True" />
             </Node>
           </Node>
         </State>

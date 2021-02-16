@@ -6,7 +6,9 @@ import "./public/css/loading-dots.css";
 import "./public/css/initial-screen.css";
 import "./public/css/poker-table.css";
 import "./public/css/radio.css";
-// import "../../node_modules/@fontawesome/fontawesome-free/css/all.min.css"
+import "./public/css/button.css";
+import "./public/css/Pacifico/Pacifico-Regular.ttf";
+import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
 
 import { App } from "./components/App";
 

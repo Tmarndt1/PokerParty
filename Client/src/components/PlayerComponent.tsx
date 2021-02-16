@@ -1,11 +1,10 @@
 import * as React from "react";
-import Player from "../models/Player";
+import { Player } from "../models/Player";
 import { isNullOrUndefined } from "util";
 import { IAppContext, AppContext } from "../contexts/AppContext";
 import PokerItem from "../models/PokerItem";
-import Party from "../models/Party";
+import { Party } from "../models/Party";
 import { SignalRService } from "../services/SignalRService";
-
 
 const cancelBtn = require("../public/images/cancel.png");
 const card = require("../public/images/card.png");
@@ -39,7 +38,7 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
             party: props.party,
             player: props.player,
             pokerItem: props.pokerItem,
-            voted: false
+            voted: false,
         }
 
         this.cardRef = React.createRef();
@@ -58,18 +57,18 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
         if (this.props.isUser && this.state.party.voting && !this.state.player.voted) cardsCss += " vote";
 
         return (
-            <div id={id} className={this.state.player.active == false ? "player inactive" : "player"}>
+            <div id={id} className={!this.state.player.isActive ? "player inactive" : "player"}>
                 <div className="avatar">
-                    {
-                        this.state.player.admin === true ? 
-                        <div className="remove-player-btn">
-                            <img className="x-img-remove" src={cancelBtn} onClick={this.remove}/>
-                        </div> 
-                        : null
-                    }
+                {
+                    this.state.player.isAdmin === true ? 
+                    <div className="remove-player-btn">
+                        <img className="x-img-remove" src={cancelBtn} onClick={this.remove}/>
+                    </div> 
+                    : null
+                }
                 </div>
-                <div className="name">{this.state.player.username}</div>
-                <div className="vote-cards-container">
+                <div className="player-name">{this.state.player.username}</div>
+                <div className="vote-cards-container" draggable={false}>
                     <div className="vote-cards-inside-container">
                         <img src={card} className={(this.props.isUser ? cardsCss + " is-user" : cardsCss)} onClick={this.vote} ref={this.cardRef}/>
                         <img src={card} className={cardsCss}/>
@@ -80,10 +79,18 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
                     this.props.isUser ? <div className="player-indicator">&#9733;</div> : null
                 }
                 <div className="bank">
-                    <div className="chip v5"></div>
-                    <div className="chip v10"></div>
-                    <div className="chip v25"></div>
-                    <div className="chip v50"></div>
+                { 
+                    this.props.player.v5Count !== 10 ? <div className="chip v5"></div> : null
+                }
+                { 
+                    this.props.player.v10Count !== 10 ? <div className="chip v10"></div> : null
+                }
+                { 
+                    this.props.player.v25Count !== 10 ? <div className="chip v25"></div> : null
+                }
+                { 
+                    this.props.player.v50Count !== 10 ? <div className="chip v50"></div> : null
+                }
                 </div>
                 {
                     this.state.player.voted === true ? this.showChips() : null
@@ -122,10 +129,10 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
 
         return (
             <div className="bet-container">
-                {this.generateBet(player.v5Count, "chip v5", "0px")}
-                {this.generateBet(player.v10Count, "chip v10", "18px")}
-                {this.generateBet(player.v25Count, "chip v25", "36px")}
-                {this.generateBet(player.v50Count, "chip v50", "54px")}
+                { this.generateBet(player.v5Count, "chip v5", "0px") }
+                { this.generateBet(player.v10Count, "chip v10", "18px") } 
+                { this.generateBet(player.v25Count, "chip v25", "36px") }
+                { this.generateBet(player.v50Count, "chip v50", "54px") }
             </div>
         )
     }

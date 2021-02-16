@@ -1,6 +1,6 @@
 import * as signalR from "@microsoft/signalr";
-import Player, { IPlayer } from "../models/Player";
-import Party, { IParty } from "../models/Party";
+import { Player, IPlayer } from "../models/Player";
+import { Party, IParty } from "../models/Party";
 import { IPokerItem } from "../models/PokerItem";
 import IResponse from "../interfaces/IResponse";
 import IRemoveVoterRequest from "../interfaces/IRemoveVoterRequest";

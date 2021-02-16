@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Poker.Library.Models;
+using Poker.Library.Utilities;
 
 namespace Poker.Library
 {
@@ -15,53 +16,61 @@ namespace Poker.Library
 
         private DataModel() { }
 
-        public bool TryStart(Party party, Player admin)
+        public Result TryStart(Party party, Player admin)
         {
             try
             {
-                if (party == null || admin == null) return false;
+                if (party == null || admin == null)
+                {
+                    return new Result(false, "Bad request");
+                }
 
-                if (Parties.Any(x => x.Value.Name == party.Name)) return false;
+                if (Parties.Any(x => x.Value.Name == party.Name))
+                {
+                    return new Result(false, "Party name already exists");
+                }
 
                 Parties.Add(party.ID, party);
 
                 Players.Add(admin.ID, admin);
 
-                return true;
+                return new Result(true);
             }
             catch
             {
-                return false;
+                return new Result(false, "Bad request");
             }
         }
 
-        public bool TryJoin(string password, string partyName, Player player, out Party party)
+        public Result TryJoin(string password, string partyName, Player player, out Party party)
         {
             party = null;
+
+            Result badRequest = new Result(false, "Bad request");
 
             try
             {
                 if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(password)
-                    || player == null) return false;
+                    || player == null) return new Result(false, "Bad request"); ;
 
-                party = Parties.FirstOrDefault(x => x.Value.Name == partyName && x.Value.MatchPassword(password)).Value;
+                party = Parties.FirstOrDefault(x => x.Value.Name == partyName).Value;
 
-                if (party == null) return false;
+                if (party == null) return badRequest;
+
+                if (!party.MatchPassword(password)) return new Result(false, "Invalid password");
 
                 if (!Players.TryAdd(player.ID, player))
                 {
                     party = null;
 
-                    return false;
+                    return badRequest;
                 }
 
-                party.Members.Add(player.ID, player);
-
-                return true;
+                return party.TryJoin(player);
             }
             catch
             {
-                return false;
+                return badRequest;
             }
         }
     }
