@@ -637,3 +637,7 @@ font-family: 'Space Mono', monospace; */
     font-weight: 600;
     cursor: pointer;
 }
+
+#admin-options > div > span {
+    padding-right: 8px;
+}

@@ -7,9 +7,8 @@ import "./public/css/initial-screen.css";
 import "./public/css/poker-table.css";
 import "./public/css/radio.css";
 import "./public/css/button.css";
-import "./public/css/Pacifico/Pacifico-Regular.ttf";
 import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
 
 import { App } from "./components/App";
 
-ReactDOM.render(<App />, document.getElementById("viewport"));
+ReactDOM.render(<App/>, document.getElementById("viewport"));

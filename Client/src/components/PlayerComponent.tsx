@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Player } from "../models/Player";
-import { isNullOrUndefined } from "util";
 import { IAppContext, AppContext } from "../contexts/AppContext";
 import PokerItem from "../models/PokerItem";
 import { Party } from "../models/Party";
 import { SignalRService } from "../services/SignalRService";
+import { isNothing } from "../utilitites/isNothing";
 
 const cancelBtn = require("../public/images/cancel.png");
 const card = require("../public/images/card.png");
@@ -52,7 +52,7 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
 
         if (this.state.player.voted == true) cardsCss += "hide ";
 
-        if (isNullOrUndefined(this.state.pokerItem)) cardsCss += "disabled ";
+        if (isNothing(this.state.pokerItem)) cardsCss += "disabled ";
 
         if (this.props.isUser && this.state.party.voting && !this.state.player.voted) cardsCss += " vote";
 
@@ -62,9 +62,8 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
                 {
                     this.state.player.isAdmin === true ? 
                     <div className="remove-player-btn">
-                        <img className="x-img-remove" src={cancelBtn} onClick={this.remove}/>
-                    </div> 
-                    : null
+                        <i className="fas fa-times x-img-remove" onClick={this.remove}/>
+                    </div> : null
                 }
                 </div>
                 <div className="player-name">{this.state.player.username}</div>
@@ -110,7 +109,7 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
 
     private vote = (): void => {
         if (!this.props.isUser) return;
-        if (this.state.voted === true || isNullOrUndefined(this.state.pokerItem) === true) return;
+        if (this.state.voted === true || isNothing(this.state.pokerItem) === true) return;
         this.cardRef.current.classList.remove("vote");
         this.props.voteHandler();
     }

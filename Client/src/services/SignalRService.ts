@@ -33,7 +33,7 @@ export enum SignalREvent {
     RemovePlayer = "RemovePlayer",
     PlayerUpdate = "PlayerUpdate",
     PartyUpdate = "PartyUpdate",
-    PlayerAdded = "PlayerAdded"
+    PlayerAdded = "PlayerAdded",
 }
 
 export type ISubscriber = [SignalREvent, Function]; // SocketEvent, Callback Function, SubscriberID

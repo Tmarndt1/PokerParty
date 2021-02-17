@@ -9,39 +9,42 @@ module.exports = {
 
     mode: "production",
     // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
+    devtool: "inline-source-map",
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx", ".js", ".json", ".css", ".less"]
+        extensions: [".ts", ".tsx", ".js"]
     },
 
     module: {
         rules: [
             { 
                 test: /\.tsx?$/, 
-                loader: "ts-loader" 
-            },
-            { 
-                enforce: "pre", 
-                test: /\.js$/, 
-                loader: "source-map-loader" 
+                loader: "ts-loader",
+                exclude: /node_modules/
             },
             {
                 test:/\.css$/,
                 use:['style-loader','css-loader']
             },
             {
-                test: /\.scss$/,
-                loader: 'style-loader!css-loader!sass-loader'
+                test: /\.html$/,
+                use: {
+                    loader: "html-loader",
+                    options: {
+                        attrs: [
+                            ":data-src"
+                        ]
+                    }
+                }
             },
             {
-                test: /\.(woff(2)?|ttf|eot|svg|png)(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.(png|jpe|jpg|woff|woff2|eot|ttf|svg|gif)(\?.*$|$)/,
                 use: [
                     {
-                        loader: 'file-loader',
+                        loader: "url-loader",
                         options: {
-                            name: '[name].[ext]',
+                            limit: 10000,
                         }
                     }
                 ]

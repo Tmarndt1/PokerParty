@@ -37,3 +37,7 @@
     bottom: -2px;
     left: 0;
 }
+
+.tab > span {
+    padding-right: 8px;
+}

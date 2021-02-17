@@ -108,20 +108,29 @@ export class App extends React.Component<IProps, IState> {
                                                     <div className="tab-container">
                                                         <div className={pokerTableTabCss}
                                                             onClick={() => this.setViewOption(ViewOption.PokerTable)}>
-                                                            Poker Table
+                                                            <span>Poker Table</span>
+                                                            <i className="fas fa-table"></i>
                                                         </div>
                                                         <div className={workItemTabCss}
                                                             onClick={() => this.setViewOption(ViewOption.WorkItem)}>
-                                                            Work Item
+                                                            <span>Work Item</span>
+                                                            <i className="fas fa-cube"></i>
                                                         </div>
                                                         <div className={historyTabCss}
                                                             onClick={() => this.setViewOption(ViewOption.History)}>
-                                                            History
+                                                            <span>History</span>
+                                                            <i className="fas fa-history"></i>
                                                         </div>
                                                     </div>
                                                     <div id="admin-options">
-                                                        <div>Revote</div>
-                                                        <div>Submit</div>
+                                                        <div>
+                                                            <span>Revote</span>
+                                                            <i className="fas fa-undo-alt"/>
+                                                        </div>
+                                                        <div>
+                                                            <span>Submit</span>
+                                                            <i className="fas fa-check"/>
+                                                        </div>
                                                     </div>  
                                                 </div>
                                                 <div className="divider" style={dividerStyle}></div>
