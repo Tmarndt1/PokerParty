@@ -7,8 +7,11 @@ import { isNothing } from "../utilitites/isNothing";
 import IStartOrJoinRequest from "../interfaces/IStartOrJoinRequest";
 import { Player } from "../models/Player";
 import "../public/css/login.css";
+import { Button } from "./Button";
 
-interface IProps {};
+interface IProps {
+    onLogin: (user: Player, party: Party, password: string) => any;
+};
 
 interface IState {
     username: string;
@@ -25,12 +28,7 @@ interface IState {
 export default class Login extends React.Component<IProps, IState> {
     public context: IAppContext;
     public static contextType = AppContext;
-
-    private pollerF: NodeJS.Timeout;
-    private connectedSubscriptionId: string;
-    private partyClosedSubscriptionId: string;
-    private partyAddedSubscriptionId: string;
-    private activePartyId: string;
+    private _mounted = false;
 
     constructor(props: IProps) {
         super(props);
@@ -59,12 +57,10 @@ export default class Login extends React.Component<IProps, IState> {
         return (
             <div id="login-container">
                 {
-                    this.state.submitting ? 
+                    this.state.submitting !== true ? null : 
                     <div className="login-loading-dots-container">
                         <LoadingDots/>
                     </div>
-                    : 
-                    null
                 }
                 <div id="login-header">
                     Sign In
@@ -72,25 +68,28 @@ export default class Login extends React.Component<IProps, IState> {
                 <div id="name-container">
                     <div className="name-wrapper">
                         <label htmlFor="first-name">Username:</label>
-                        <input autoComplete="off" id="first-name" type="text" className={this.state.usernameInvalid === true ? "invalid-input" : ""} 
+                        <input autoComplete="off" id="first-name" type="text" 
+                            className={this.state.usernameInvalid === true ? "invalid-input text-field" : "text-field"} 
                             onChange={e => this.setState({username: e.currentTarget.value, usernameInvalid: false})}/>
-                        {this.state.usernameInvalid ? <div className="input-error-message">Enter your username</div> : null}
+                        { this.state.usernameInvalid ? <div className="input-error-message">Enter your username</div> : null }
                     </div>
                 </div>
                 <div id="party-name-container">
                     <div className="name-wrapper">
                         <label htmlFor="party-name">Party Name:</label>
-                        <input autoComplete="off" id="party-name" className={this.state.partyNameInvalid === true ? "invalid-input" : ""} type="text" 
+                        <input autoComplete="off" id="party-name" type="text" 
+                            className={this.state.partyNameInvalid === true ? "invalid-input text-field" : "text-field"}
                             onChange={e => this.setState({partyName: e.currentTarget.value, partyNameInvalid: false})} value={this.state.partyName}/>
-                        {this.state.partyNameInvalid ? <div className="input-error-message">Enter your party name</div> : null}
+                        { this.state.partyNameInvalid ? <div className="input-error-message">Enter your party name</div> : null }
                     </div>
                 </div>
                 <div id="party-password-container">
                     <div className="name-wrapper">
                         <label htmlFor="party-password">Party Password:</label>
-                        <input autoComplete="off" id="party-password" type="password" className={this.state.passwordInvalid === true ? "invalid-input" : ""} 
+                        <input autoComplete="off" id="party-password" type="password" 
+                        className={this.state.passwordInvalid === true ? "invalid-input text-field" : "text-field"} 
                             onChange={e => this.setState({password: e.currentTarget.value, passwordInvalid: false})}/>
-                        {this.state.passwordInvalid ? <div className="input-error-message">Enter your password</div> : null}
+                        { this.state.passwordInvalid ? <div className="input-error-message">Enter your password</div> : null }
                     </div>
                 </div>
                 <div id="is-admin-container">
@@ -101,12 +100,10 @@ export default class Login extends React.Component<IProps, IState> {
                     </label>
                 </div>
                 <div id="join-btn-wrapper">
-                {
-                    this.state.isAdmin == true ? 
-                    <button id="join-btn" className="btn" onClick={this.login}>Start</button>
-                    :
-                    <button id="join-btn" className="btn" onClick={this.login}>Join</button>
-                }
+                    <Button id="join-btn" onClick={this.login}
+                        text={this.state.isAdmin ? "Start" : "Join"}>
+                        <i className="fas fa-check"/>
+                    </Button>
                 </div>
             </div>
         );
@@ -114,9 +111,11 @@ export default class Login extends React.Component<IProps, IState> {
 
     public componentDidMount = (): void => {
         document.addEventListener("keydown", this.onEnter);
+        this._mounted = true;
     }
 
     public componentWillUnmount = (): void => {
+        this._mounted = false;
         document.removeEventListener("keydown", this.onEnter);
     }
 
@@ -137,24 +136,27 @@ export default class Login extends React.Component<IProps, IState> {
                 partyNameInvalid: partyNameInvalid,
                 passwordInvalid: passwordInvalid
             });
-        } else this.setState({ submitting: true });
+        } 
+        
+        this.setState({ submitting: true });
 
-        let callback = () => {
-            let startOrJoin: (request: IStartOrJoinRequest) => Promise<{user: Player, party: Party}> = 
-                this.state.isAdmin ? 
-                SignalRService.getInstance().startParty : SignalRService.getInstance().joinParty;
+        let callback = async () => {
+            try {
+                if (this.state.isAdmin) {
+                    let result = await this.context.signalR.startParty({ partyName: this.state.partyName, username: this.state.username, password: this.state.password });
+                    
+                    this.props.onLogin(result.user, result.party, this.state.password);
+                } else {
+                    let result = await this.context.signalR.joinParty({ partyName: this.state.partyName, username: this.state.username, password: this.state.password });
+                    
+                    this.props.onLogin(result.user, result.party, this.state.password);
+                }
 
-            startOrJoin({
-                partyName: this.state.partyName,
-                username: this.state.username,
-                password: this.state.password
-            })
-            .then(res => {  
-                this.context.login(res.user, res.party, res.user.isAdmin);
-            })
-            .catch(error => {
-                this.setState({ submitting: false });
-            });
+                if (this._mounted) this.setState({ submitting: false });
+            }
+            catch {
+                if (this._mounted) this.setState({ submitting: false });
+            }
         }
 
         setTimeout(() => {

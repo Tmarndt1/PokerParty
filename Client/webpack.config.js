@@ -7,7 +7,7 @@ module.exports = {
         path: path.resolve("./dist")
     },
 
-    mode: "production",
+    mode: "development",
     // Enable sourcemaps for debugging webpack's output.
     devtool: "inline-source-map",
 
@@ -17,15 +17,14 @@ module.exports = {
     },
 
     module: {
-        rules: [
-            { 
-                test: /\.tsx?$/, 
+        rules: [{
+                test: /\.tsx?$/,
                 loader: "ts-loader",
                 exclude: /node_modules/
             },
             {
-                test:/\.css$/,
-                use:['style-loader','css-loader']
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
             },
             {
                 test: /\.html$/,
@@ -40,14 +39,12 @@ module.exports = {
             },
             {
                 test: /\.(png|jpe|jpg|woff|woff2|eot|ttf|svg|gif)(\?.*$|$)/,
-                use: [
-                    {
-                        loader: "url-loader",
-                        options: {
-                            limit: 10000,
-                        }
+                use: [{
+                    loader: "url-loader",
+                    options: {
+                        limit: 10000,
                     }
-                ]
+                }]
             }
         ]
     },

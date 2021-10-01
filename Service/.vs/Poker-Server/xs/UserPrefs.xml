@@ -1,28 +1,32 @@
 ﻿<Properties StartupConfiguration="{6385BCA2-ECAB-4E98-9B7C-5FF3E89EFA5D}|Default">
   <MonoDevelop.Ide.ItemProperties.Poker-Console PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Poker-Library/Models/PokerItem.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Poker-Console/Program.cs">
     <Files>
-      <File FileName="Poker-Library/Models/Player.cs" Line="85" Column="35" />
-      <File FileName="Poker-Library/PokerHub.cs" />
-      <File FileName="Poker-Library/WebService.cs" />
-      <File FileName="Poker-Library/JsonResponses/JsonResponse.cs" />
-      <File FileName="Poker-Library/Controller.cs" />
-      <File FileName="Poker-Library/DataModel.cs" />
-      <File FileName="Poker-Library/Utilities/Result.cs" />
-      <File FileName="Poker-Library/Models/InitialResponse.cs" Line="10" Column="1" />
-      <File FileName="Poker-Library/Models/Party.cs" Line="54" Column="1" />
-      <File FileName="Poker-Library/Models/PokerItem.cs" Line="14" Column="24" />
+      <File FileName="Poker-Library/PokerHub.cs" Line="175" Column="60" />
+      <File FileName="Poker-Library/Models/Party.cs" />
+      <File FileName="Poker-Library/JsonConverters/PartyConverter.cs" />
+      <File FileName="Poker-Library/DataModel.cs" Line="181" Column="58" />
+      <File FileName="Poker-Library/Models/Player.cs" />
+      <File FileName="Poker-Library/Models/WorkItem.cs" />
+      <File FileName="Poker-Library/JsonRequests/WorkItemRequest.cs" />
+      <File FileName="Poker-Library/JsonRequests/JoinRequest.cs" />
+      <File FileName="Poker-Library/JsonRequests/StartRequest.cs" />
+      <File FileName="Poker-Library/JsonRequests/VoteRequest.cs" />
+      <File FileName="Poker-Library/JsonRequests/Request.cs" />
+      <File FileName="Poker-Library/JsonConverters/PlayerConverter.cs" />
+      <File FileName="Poker-Library/Startup.cs" />
+      <File FileName="Poker-Console/Program.cs" Line="21" Column="10" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Poker-Server" expanded="True">
-            <Node name="Poker-Console" expanded="True" />
+            <Node name="Poker-Console" expanded="True">
+              <Node name="Program.cs" selected="True" />
+            </Node>
             <Node name="Poker-Library" expanded="True">
-              <Node name="Models" expanded="True">
-                <Node name="PokerItem.cs" selected="True" />
-              </Node>
-              <Node name="Utilities" expanded="True" />
+              <Node name="JsonRequests" expanded="True" />
+              <Node name="Models" expanded="True" />
             </Node>
           </Node>
         </State>

@@ -1,11 +1,12 @@
+import { rgbToHex } from "@material-ui/core";
 import { ITheme } from "./ITheme";
 
 export let darkTheme : ITheme = {
-    pageBgColor: "#202020",
+    pageBgColor: "rgb(32, 33, 34)",
     containerBkgdColor: "#232323",
-    containerBrdColor: "rgba(255, 255, 255, 0.12)",
-    boxShaddow: "0 0 3px #191919",
-    fontColor: "white",
+    containerBrdColor: "rgb(36, 37, 38)",
+    boxShaddow: "0 0 3px #303030",
+    fontColor: "lightgray",
     inputColor: "#292929",
     dividerBkgdColor: "#333"
 }

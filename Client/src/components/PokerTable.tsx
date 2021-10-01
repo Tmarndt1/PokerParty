@@ -1,28 +1,21 @@
 import * as React from "react";
 import { Player } from "../models/Player";
 import PlayerComponent from "./PlayerComponent";
-import { isNullOrUndefined } from "util";
 import { IAppContext, AppContext } from "../contexts/AppContext";
 import PokerCard from "./PokerCard";
-import Modal from "./Modal";
-import VoteComponent from "./VoteComponent";
-import { Party, IParty } from "../models/Party";
-import { SignalRService, SignalREvent } from "../services/SignalRService";
+import { Party } from "../models/Party";
 
 const card = require("../public/images/card.png");
 
 interface IProps {
     user: Player;
     party: Party;
+    onVote: () => any;
+    onFlip: () => any;
 };
 
 interface IState {
-    user: Player;
-    party: Party;
-    flipped: boolean;
-    flipping: boolean;
-    countDown: number;
-    voting: boolean;
+    
 };
 
 
@@ -30,70 +23,50 @@ export default class PokerTable extends React.Component<IProps, IState> {
     public context: IAppContext;
     public static contextType = AppContext;
     private playersRef: React.RefObject<HTMLDivElement> = React.createRef();
-    private playersWidth: number = 0;
 
     constructor(props: IProps) {
         super(props);
-
         this.state = {
-            user: props.user,
-            party: props.party,
-            flipped: false,
-            flipping: false,
-            countDown: null,
-            voting: false
+            
         }
     }
 
     public render = (): JSX.Element => {
-        let average: number = this.state.party.voting ? 
-            this.getAvg(this.state.party.members.filter(x => x.isActive).map(x => parseInt(x.vote))) : null;
-
         return (
             <div id="poker-table-body">
-                <Modal active={this.state.voting}>
-                    <VoteComponent closeHandler={this.closeVoteWindow} user={this.state.user}
-                    pokerItem={this.state.party.pokerItem} partyId={this.state.party.id}/>
-                </Modal>
-                {
-                    this.state.flipping === true ? 
-                    <div id="flip-count-down">
-                        Cards flip in: { this.state.countDown } seconds
-                    </div>
-                    : null
-                }
                 <div id="poker-table">
                     <div id="table-name">{ this.props.party.name }</div>
-                    <div id="cards-place">
-                    {
-                        this.state.party.members.filter(x => x.isActive && x.voted).map(player => {
-                            return <PokerCard key={player.id} player={player} flipped={this.state.flipped}/>
-                        })
-                    }
-                    {
-                        this.state.user.isAdmin == true && this.state.flipped == true ? 
-                        <div id="reset-container" onClick={this.revote}>
-                            <i className="fas fa-undo-alt"></i>
-                        </div> : null
-                    }
+                        <div id="cards-place">
+                        {
+                            this.props.party.members.filter(x => x.isActive && x.voted).map(player => {
+                                return <PokerCard key={player.key} player={player} flipped={this.props.party?.flipped}/>
+                            })
+                        }
+                        {/* TODO HIDE when not voting */}
+                        <div id="reset-container" onClick={this.props.onFlip} 
+                            style={{fontSize: "1.5rem"}}>
+                            { this.getEyeIcon() }
+                        </div>
                     </div>
                     <div id="players" ref={this.playersRef}>
                     {
-                        this.state.party.members.map(player => {
+                        this.props.party.members.map(player => {
                             return (
-                                <PlayerComponent key={player.id} player={player} 
-                                    isUser={(this.props.user.id === player.id)} 
-                                    pokerItem={this.state.party.pokerItem}
-                                    voteHandler={() => this.setState({voting: true})} 
-                                    party={this.state.party}/>
-                            )
+                                <PlayerComponent key={player.key} player={player} 
+                                    isUser={(this.props.user.key === player.key)} 
+                                    pokerItem={this.props.party.workItem}
+                                    onVote={this.props.onVote} 
+                                    party={this.props.party}/>
+                            );
                         })
                     }
                     </div>
                     <div id="average-container">
                     {
-                        this.state.flipped == true ? 
-                        <span>Average: { isNaN(average) ? "?" : average } </span> : null
+                        this.props.party?.flipped === true ? 
+                            <span>
+                                Average: { this.getAvg(this.props.party.members.filter(x => x.isActive && x.voted).map(x => parseInt(x.vote))) }
+                            </span>: null
                     }
                     </div>
                 </div>
@@ -102,117 +75,22 @@ export default class PokerTable extends React.Component<IProps, IState> {
     }
 
     public componentDidMount = (): void => {
-        SignalRService.getInstance().subscribe(SignalREvent.ItemSubmmitted, this.itemSubmitted);
-        SignalRService.getInstance().subscribe(SignalREvent.PartyUpdate, this.updateParty);
-        SignalRService.getInstance().subscribe(SignalREvent.PlayerRemoved, this.removePlayer);
-        SignalRService.getInstance().subscribe(SignalREvent.PlayerVoted, this.setPlayersVote);
-        SignalRService.getInstance().subscribe(SignalREvent.Reset, this.reset);
-        SignalRService.getInstance().subscribe(SignalREvent.RevoteItem, this.reset);
-        SignalRService.getInstance().subscribe(SignalREvent.PlayerAdded, this.playerAdded);
-
-        this.playersWidth = this.playersRef.current.clientWidth;
-    }
-
-    private removePlayer = (player: Player): void => {
-        for (let i = 0; i < this.state.party.members.length; i++) {
-            if (this.state.party.members[i].id == player.id) {
-                this.state.party.members.splice(i, 1);
-                break;
-            }
-        }
-
-        this.setState({ party: this.state.party });
-    }
-
-    private setPlayersVote = (json: IParty) => {
-        let countDown: number = 3;
-        let party: Party = new Party(json);
-        let allVoted: boolean = party.members.filter(x => x.isActive === true).every(x => x.voted === true);
         
-        this.setState({
-            party: party,
-            countDown: countDown,
-            flipping: allVoted,
-        });
-
-        if (allVoted) {
-            let func: any = setInterval(() => {
-                if (countDown === 0) {
-                    this.setState({
-                        countDown: null,
-                        flipping: false,
-                    });
-
-                    return clearInterval(func);
-                }
-
-                --countDown;
-
-                this.setState({
-                    countDown: countDown,
-                    flipped: (countDown === 0),
-                });
-            }, 1000);
-        }
-    }
-
-    private itemSubmitted = (json: IParty): void => { 
-        let party: Party = new Party(json);
-
-        this.setState({
-            party: party,
-            flipped: false,
-            flipping: false,
-            countDown: null
-        });
-    }
-
-    private revote = (): void => {
-        SignalRService.getInstance().revoteItem({
-            partyId: this.state.party.id
-        });
-    }
-
-    private reset = (json: IParty): void => {
-        if (isNullOrUndefined(json)) return;
-        
-        let party: Party = new Party(json);
-
-        this.setState({
-            party: party,
-            flipped: false,
-            flipping: false,
-            countDown: null,
-            voting: false
-        });
-    }
-
-    private playerAdded = (json: IParty): void => {
-        if (isNullOrUndefined(json)) return;
-        
-        let party: Party = new Party(json);
-
-        this.setState({
-            party: party,
-            flipped: false,
-            flipping: false,
-            countDown: null,
-        });
     }
 
     private getAvg(votes: number[]): number {
         return votes.reduce((a, b) => a + b) / votes.length;
     }
 
-    private closeVoteWindow = (): void => {
-        this.setState({
-            voting: false
-        });
-    }
+    private getEyeIcon = (): JSX.Element => {
+        if (!this.props.user.isAdmin) return null;
 
-    private updateParty = (json: IParty): void => {
-        this.setState({
-            party: new Party(json)
-        });
+        let hasOneVoted: boolean = this.props.party?.voting === true && this.props.party.members.some(x => x.voted === true);
+
+        if (!hasOneVoted) return null;
+
+        if (this.props.party?.flipped) return <i className="fas fa-eye-slash"></i>
+
+        if (!this.props.party?.flipped) return <i className="fas fa-eye"></i>
     }
 }

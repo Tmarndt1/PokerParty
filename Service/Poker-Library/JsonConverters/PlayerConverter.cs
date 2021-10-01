@@ -22,7 +22,7 @@ namespace Poker.Library.JsonConverters
         {
             return new JObject()
             {
-                new JProperty("id", value.ID),
+                new JProperty("id", value.Key),
                 new JProperty("username", value.Username),
                 new JProperty("isAdmin", value.IsAdmin),
                 new JProperty("isActive", value.IsActive),

@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Poker.Library.JsonConverters;
 using Poker.Library.JsonRequests;
 using Poker.Library.JsonResponses;
 using Poker.Library.Models;
@@ -11,71 +10,197 @@ using Poker.Library.Utilities;
 
 namespace Poker.Library
 {
+    public enum BroadcastOption
+    {
+        PartyUpdate
+    }
+
     public class PokerHub : Hub
     {
-        static JsonSerializer _serializer = new JsonSerializer();
+        private static DataModel _dataModel = DataModel.Instance;
 
-        static PokerHub()
+        private IHubContext<PokerHub> _context;
+
+        public PokerHub(IHubContext<PokerHub> hubContext) : base()
         {
-            _serializer.Converters.Add(new PartyConverter());
+            _context = hubContext;
         }
 
         public override async Task OnConnectedAsync()
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, "SignalR Users");
-
             await base.OnConnectedAsync();
+        }
+
+        public async Task BroadcastAsync(BroadcastOption option, string partyName, object data)
+        {
+            try
+            {
+                JToken json = JToken.FromObject(data);
+
+                await _context.Clients.Group(partyName).SendAsync(option.ToString("G"), json);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, "SignalR Users");
+            string partyName = _dataModel.GetUsersParty(Context.ConnectionId);
+
+            if (!string.IsNullOrEmpty(partyName))
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, partyName);
+            }
 
             await base.OnDisconnectedAsync(exception);
         }
 
         [HubMethodName("Start")]
-        public JsonResponse<JObject> Start(StartOrJoinRequest request)
+        public async Task<JsonResponse<StartResponse>> Start(StartRequest request)
         {
-            Result<InitialResponse> result = Controller.Instance.TryStart(Context.ConnectionId,
-                request.Username, request.Password, request.PartyName);
-
-            if (!result.Success) return new JsonResponse<JObject>(false, null, result.Error);
-
-            StartResponse data = new StartResponse()
+            var taskResult = await Task.Run(async () =>
             {
-                Started = true,
-                Party = result.Data.Party,
-                User = result.Data.User
-            };
+                bool started = _dataModel.TryStart(request, Context.ConnectionId, out Result<StartResponse> result);
 
-            return new JsonResponse<JObject>()
-            {
-                Success = true,
-                Data = JObject.FromObject(data, _serializer)
-            };
+                if (!started || result.Data == null || result.Data.Party == null || result.Data.User == null)
+                {
+                    return new JsonResponse<StartResponse>()
+                    {
+                        Success = false,
+                        Data = null,
+                        Error = result.Error
+                    };
+                }
+
+                await Groups.AddToGroupAsync(Context.ConnectionId, request.PartyName);
+
+                result.Data.Party.OnUpdated += BrodcastUpdate;
+
+                return new JsonResponse<StartResponse>()
+                {
+                    Success = true,
+                    Data = result.Data
+                };
+            });
+
+            return taskResult;
         }
 
         [HubMethodName("Join")]
-        public JsonResponse<JObject> Join(StartOrJoinRequest request)
+        public async Task<JsonResponse<JoinResponse>> Join(JoinRequest request)
         {
-            Result<InitialResponse> result = Controller.Instance.TryJoin(Context.ConnectionId,
-                request.Username, request.Password, request.PartyName);
-
-            if (!result.Success) return new JsonResponse<JObject>(false, null, result.Error);
-
-            JoinResponse data = new JoinResponse()
+            var taskResult = await Task.Run(async () =>
             {
-                Joined = true,
-                Party = result.Data.Party,
-                User = result.Data.User
-            };
+                bool joined = _dataModel.TryJoin(request, Context.ConnectionId, out Result<JoinResponse> result);
 
-            return new JsonResponse<JObject>()
+                if (!joined)
+                {
+                    return new JsonResponse<JoinResponse>()
+                    {
+                        Success = false,
+                        Data = null,
+                        Error = result.Error
+                    };
+                }
+
+                await Groups.AddToGroupAsync(Context.ConnectionId, request.PartyName);
+
+                return new JsonResponse<JoinResponse>()
+                {
+                    Success = true,
+                    Data = result.Data
+                };
+            });
+
+            return taskResult;
+        }
+
+        [HubMethodName("SubmitWorkItem")]
+        public async Task<JsonResponse<Party>> SubmitWorkItem(WorkItemRequest request)
+        {
+            var taskResult = await Task.Run(() =>
             {
-                Success = true,
-                Data = JObject.FromObject(data, _serializer)
-            };
+                bool success = _dataModel.TrySubmitWorkItem(request, out Result<Party> result);
+
+                if (!success)
+                {
+                    return new JsonResponse<Party>()
+                    {
+                        Success = false,
+                        Data = null,
+                        Error = result.Error
+                    };
+                }
+
+                return new JsonResponse<Party>()
+                {
+                    Success = true,
+                    Data = result.Data
+                };
+            });
+
+            return taskResult;
+        }
+
+        [HubMethodName("SubmitVote")]
+        public async Task<JsonResponse<Party>> SubmitVote(VoteRequest request)
+        {
+            var taskResult = await Task.Run(() =>
+            {
+                bool success = _dataModel.TrySubmitVote(request, out Result<Party> result);
+
+                if (!success)
+                {
+                    return new JsonResponse<Party>()
+                    {
+                        Success = false,
+                        Data = null,
+                        Error = result.Error
+                    };
+                }
+
+                return new JsonResponse<Party>()
+                {
+                    Success = true,
+                    Data = result.Data
+                };
+            });
+
+            return taskResult;
+        }
+
+        [HubMethodName("Flip")]
+        public async Task<JsonResponse<Party>> Flip(Request request)
+        {
+            var taskResult = await Task.Run(() =>
+            {
+                bool success = _dataModel.TryFlip(request, out Result<Party> result);
+
+                if (!success)
+                {
+                    return new JsonResponse<Party>()
+                    {
+                        Success = false,
+                        Data = null,
+                        Error = result.Error
+                    };
+                }
+
+                return new JsonResponse<Party>()
+                {
+                    Success = true,
+                    Data = result.Data
+                };
+            });
+
+            return taskResult;
+        }
+
+        private void BrodcastUpdate(object sender, Party party)
+        {
+            _ = BroadcastAsync(BroadcastOption.PartyUpdate, party.Name, party);
         }
     }
 }

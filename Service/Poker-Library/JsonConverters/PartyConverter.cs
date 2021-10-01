@@ -23,9 +23,9 @@ namespace Poker.Library.JsonConverters
         {
             return new JObject()
             {
-                new JProperty("id", value.ID),
+                new JProperty("id", value.Key),
                 new JProperty("name", value.Name),
-                new JProperty("pokerItem", value.PokerItem),
+                new JProperty("workItem", value.WorkItem),
                 new JProperty("voting", value.Voting),
                 new JProperty("members", value.Members.Select(member => PlayerConverter.ToJObject(member)))
             };

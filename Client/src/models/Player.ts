@@ -1,5 +1,3 @@
-import { IPokerItem } from "./PokerItem";
-import { isNullOrUndefined } from "util";
 
 export enum CardSuit {
     Clubs,
@@ -14,7 +12,7 @@ export interface ILastVote {
 }
 
 export interface IPlayer {
-    id: string;
+    key: string;
     username: string;
     isActive: boolean;
     isAdmin: boolean;
@@ -32,7 +30,7 @@ export interface IPlayer {
 }
 
 export class Player implements IPlayer {
-    public id: string;
+    public key: string;
     public username: string;
     public isActive: boolean;
     public isAdmin: boolean;
@@ -49,9 +47,9 @@ export class Player implements IPlayer {
     public voteSuit: CardSuit;
 
     constructor(json: IPlayer = null) {
-        if (isNullOrUndefined(json)) return;
+        if (json == null) return;
         
-        this.id = json.id;
+        this.key = json.key;
         this.username = json.username;
         this.isActive = json.isActive;
         this.vote = json.vote;

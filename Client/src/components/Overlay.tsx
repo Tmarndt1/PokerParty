@@ -1,4 +1,10 @@
-import * as React from "react"
+import * as React from "react";
+
+export interface IOverlay {
+    active: boolean;
+    body: JSX.Element | JSX.Element[];
+    callback: (object: any) => void;
+}
 
 interface IProps {
     active: boolean;
@@ -8,7 +14,7 @@ interface IState {
     active: boolean;
 };
 
-export default class Modal extends React.Component<IProps, IState> {
+export class Overlay extends React.Component<IProps, IState> {
     modalRef: React.RefObject<HTMLDivElement>;
 
     constructor(props: IProps) {
@@ -26,9 +32,9 @@ export default class Modal extends React.Component<IProps, IState> {
         return (
             <div id="modal">
                 <div id="modal-content" ref={this.modalRef}>
-                    {
-                        this.props.children
-                    }
+                {
+                    this.props.children
+                }
                 </div>
             </div>
         );

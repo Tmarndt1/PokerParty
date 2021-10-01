@@ -1,11 +1,10 @@
 import * as signalR from "@microsoft/signalr";
 import { Player, IPlayer } from "../models/Player";
 import { Party, IParty } from "../models/Party";
-import { IPokerItem } from "../models/PokerItem";
+import { IWorkItem } from "../models/WorkItem";
 import IResponse from "../interfaces/IResponse";
 import IRemoveVoterRequest from "../interfaces/IRemoveVoterRequest";
-import IResetRequest from "../interfaces/IResetRequest";
-import ISubmitItemRequest from "../interfaces/ISubmitItemRequest";
+import IWorkItemRequest from "../interfaces/IWorkItemRequest";
 import IRevoteRequest from "../interfaces/IRevoteRequest";
 import IVoteRequest from "../interfaces/IVoteRequest";
 import IStartOrJoinRequest from "../interfaces/IStartOrJoinRequest";
@@ -18,22 +17,18 @@ export enum SignalREvent {
     Join = "Join",
     Start = "Start",
     GetPokerPlayers = "GetPokerPlayers",
-    GetParties = "GetParties",
     GetParty = "GetParty",
-    Vote = "Vote",
     Reset = "Reset",
     ItemSubmmitted = "ItemSubmmitted",
     PartyClosed = "PartyClosed",
     OtherClosed = "OtherClosed",
-    SubmitItem = "SubmitItem",
+    SubmitWorkItem = "SubmitWorkItem",
+    SubmitVote = "SubmitVote",
     RevoteItem = "RevoteItem",
-    PartyAdded = "PartyAdded",
-    PlayerVoted = "PlayerVoted",
-    PlayerRemoved = "PlayerRemoved",
     RemovePlayer = "RemovePlayer",
     PlayerUpdate = "PlayerUpdate",
     PartyUpdate = "PartyUpdate",
-    PlayerAdded = "PlayerAdded",
+    Flip = "Flip"
 }
 
 export type ISubscriber = [SignalREvent, Function]; // SocketEvent, Callback Function, SubscriberID
@@ -51,6 +46,7 @@ export class SignalRService {
             transport: signalR.HttpTransportType.WebSockets
         })
         .build();
+
         this.setupClientFunctions();
     }
 
@@ -69,7 +65,6 @@ export class SignalRService {
     public connect = (): void => {
         this._connection.start()
         .then(res => {
-            console.log(res);
             this.isConnected = true;
         })
         .catch(err => {
@@ -79,65 +74,66 @@ export class SignalRService {
     }
 
     public joinParty = (request: IStartOrJoinRequest): Promise<{user: Player, party: Party}> => {
-        let success = false;
-        return new Promise((resolve, reject) => {
-            this._connection.invoke(SignalREvent.Join, request)
-            .then((res: IResponse<IStartOrJoinResponse>) => {
-                if (res.success === true) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result: IResponse<IStartOrJoinResponse> = await this._connection.invoke(SignalREvent.Join, request);
+
+                if (result.success === true) {
                     resolve({
-                        user: new Player(res.data.user),
-                        party: new Party(res.data.party)
-                    })
-                } else if (!isNothing(res.message)) {
-                    reject(res.message);
+                        user: new Player(result.data.user),
+                        party: new Party(result.data.party)
+                    });
+                } else if (!isNothing(result.message)) {
+                    reject(result.message);
                 } else {
-                    reject("Failed to start the poker party");
+                    reject("Failed to join the poker party");
                 }
-            })
-            .catch(err => {
-                reject(err);
-            });
-        })
+
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     public startParty = (request: IStartOrJoinRequest): Promise<{user: Player, party: Party}> => {
-        return new Promise((resolve, reject) => {
-            this._connection.invoke(SignalREvent.Start, request)
-            .then((res: IResponse<IStartOrJoinResponse>) => {
-                if (res.success === true) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result: IResponse<IStartOrJoinResponse> = await this._connection.invoke(SignalREvent.Start, request);
+
+                if (result.success === true) {
                     resolve({
-                        user: new Player(res.data.user),
-                        party: new Party(res.data.party)
+                        user: new Player(result.data.user),
+                        party: new Party(result.data.party)
                     });
-                } else if (!isNothing(res.message)) {
-                    reject(res.message);
+                } else if (!isNothing(result.message)) {
+                    reject(result.message);
                 } else {
                     reject("Failed to start the poker party");
                 }
-            })
-            .catch(err => {
-                reject(err);
-            });
-        })
-    }
 
-    public getParty = (partyId: string): Promise<IParty> => {
-        let success = false;
-        return new Promise((resolve, reject) => {
-            this._connection.invoke(SignalREvent.GetParty, partyId, (party: IParty) => {
-                resolve(party);
-            });
-
-            setTimeout(() => {
-                if (!success) reject();
-            }, 5000);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
-    public submitItem = (itemRequest: ISubmitItemRequest): Promise<IResponse<any>> => {
+    public submitWorkItem = (request: IWorkItemRequest): Promise<Party> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result: IResponse<IParty> = await this._connection.invoke(SignalREvent.SubmitWorkItem, request);
+
+                resolve(new Party(result.data));
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    public revoteItem = (request: IRevoteRequest): Promise<IResponse<any>> => {
         let success = false;
         return new Promise((resolve, reject) => {
-            this._connection.invoke(SignalREvent.SubmitItem, itemRequest, (res: IResponse<any>) => {
+            this._connection.invoke(SignalREvent.RevoteItem, request, (res: IResponse<any>) => {
                 success = true;
                 resolve(res);
             });
@@ -148,54 +144,29 @@ export class SignalRService {
         });
     }
 
-    public revoteItem = (revoteRequest: IRevoteRequest): Promise<IResponse<any>> => {
-        let success = false;
-        return new Promise((resolve, reject) => {
-            this._connection.invoke(SignalREvent.RevoteItem, revoteRequest, (res: IResponse<any>) => {
-                success = true;
-                resolve(res);
-            });
-
-            setTimeout(() => {
-                if (!success) reject();
-            }, 5000);
+    public submitVote = (request: IVoteRequest): Promise<Party> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result: IResponse<IParty> = await this._connection.invoke(SignalREvent.SubmitVote, request);
+                
+                if (result.success) {
+                    resolve(new Party(result.data));
+                } else {
+                    reject("Failed to complete vote request");
+                }
+            }
+            catch (error) {
+                reject(error);
+            }
         });
     }
 
-    public vote = (voteRequest: IVoteRequest): Promise<IResponse<any>> => {
+    public reset = (partyName: string, password: string): Promise<Party> => {
         let success = false;
         return new Promise((resolve, reject) => {
-            this._connection.invoke(SignalREvent.Vote, voteRequest, (res: IResponse<any>) => {
+            this._connection.invoke(SignalREvent.Reset, { partyName: partyName, password: password}, (res: IResponse<IParty>) => {
                 success = true;
-                resolve(res);
-            });
-
-            setTimeout(() => {
-                if (!success) reject();
-            }, 5000);
-        });
-    }
-
-    public reset = (resetRequest: IResetRequest): Promise<IResponse<any>> => {
-        let success = false;
-        return new Promise((resolve, reject) => {
-            this._connection.invoke(SignalREvent.Reset, resetRequest, (res: IResponse<any>) => {
-                success = true;
-                resolve(res);
-            });
-
-            setTimeout(() => {
-                if (!success) reject();
-            }, 5000);
-        });
-    }
-
-    public getParties = (): Promise<IParty[]> => {
-        let success = false;
-        return new Promise((resolve, reject) => {
-            this._connection.invoke(SignalREvent.GetParties, (parties: IParty[]) => {
-                success = true;
-                resolve(parties);
+                resolve(new Party(res.data));
             });
 
             setTimeout(() => {
@@ -222,9 +193,26 @@ export class SignalRService {
             }
         });
     }
+    
+    public flip = (partyName: string, passowrd: string): Promise<Party> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result: IResponse<IParty> = await this._connection.invoke(SignalREvent.Flip, { partyName: partyName, password: passowrd});
+                
+                if (result.success) {
+                    resolve(new Party(result.data));
+                } else {
+                    reject("Failed to complete vote request");
+                }
+            }
+            catch (error) {
+                reject(error);
+            }
+        });
+    }
 
     private setupClientFunctions = (): void => {
-        this._connection.on(SignalREvent.ItemSubmmitted, (args: IPokerItem) => {
+        this._connection.on(SignalREvent.ItemSubmmitted, (args: IWorkItem) => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
                 if (subscriber[0] === SignalREvent.ItemSubmmitted) subscriber[1](args);
             });
@@ -236,21 +224,9 @@ export class SignalRService {
             });
         });
 
-        this._connection.on(SignalREvent.PlayerRemoved, (pokerPlayer: IPlayer) => {
-            this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.PlayerRemoved) subscriber[1](pokerPlayer);
-            });
-        });
-
         this._connection.on(SignalREvent.PartyClosed, (args: any) => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
                 if (subscriber[0] === SignalREvent.PartyClosed) subscriber[1](args);
-            });
-        });
-
-        this._connection.on(SignalREvent.PlayerVoted, (pokerPlayer: IPlayer) => {
-            this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.PlayerVoted) subscriber[1](pokerPlayer);
             });
         });
 
@@ -263,12 +239,6 @@ export class SignalRService {
         this._connection.on(SignalREvent.OtherClosed, () => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
                 if (subscriber[0] === SignalREvent.OtherClosed) subscriber[1]();
-            });
-        });
-
-        this._connection.on(SignalREvent.PlayerAdded, (party: IParty) => {
-            this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.PlayerAdded) subscriber[1](party);
             });
         });
         

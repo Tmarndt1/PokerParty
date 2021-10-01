@@ -9,35 +9,39 @@
     position: relative;
     padding: 1rem;
     width: max-content;
-    color: #6c757d;
+    color: lightgray;
     font-weight: 600;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
 }
 
-.tab.active {
+.tab:not(.disabled).active {
     color: dodgerblue;
 }
 
-.tab.active::after {
+.tab:not(.disabled).active::after {
     position: absolute;
     content: "";
     height: 2px;
     width: 98%;
-    background: dodgerblue !important;
+    background: dodgerblue;;
     bottom: -2px;
     left: 0;
 }
 
-.tab:hover::after {
+.tab:not(.disabled):not(.active):hover::after {
     position: absolute;
     content: "";
     height: 2px;
     width: 98%;
-    background: #6c757d;
+    background: lightgray;
     bottom: -2px;
     left: 0;
 }
 
 .tab > span {
     padding-right: 8px;
+}
+
+.tab.disabled {
+    color: grey;
 }

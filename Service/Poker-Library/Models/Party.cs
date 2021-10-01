@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using Newtonsoft.Json;
 using Poker.Library.Utilities;
 
@@ -8,23 +10,28 @@ namespace Poker.Library.Models
 {
     public class Party
     {
-        [JsonProperty("id")]
-        public Guid ID { get; set; }
+        [JsonProperty("key")]
+        public Guid Key { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("pokerItem")]
-        public PokerItem PokerItem { get; set; }
+        [JsonProperty("workItem")]
+        public WorkItem WorkItem { get; set; } = new WorkItem();
 
         [JsonProperty("members")]
         public List<Player> Members { get; set; } = new List<Player>();
 
         [JsonProperty("voting")]
-        public bool Voting { get; set; }
+        public bool Voting { get; set; } = false;
+
+        [JsonProperty("flipped")]
+        public bool Flipped { get; set; } = false;
 
         [JsonIgnore]
         public Player Admin { get; set; }
+
+        public event EventHandler<Party> OnUpdated;
 
         [JsonIgnore]
         private byte[] _hashedPass;
@@ -32,56 +39,127 @@ namespace Poker.Library.Models
         [JsonIgnore]
         private List<int> _availableSeats = new List<int>() { 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-        public static Party Start(string name, string password, Player admin)
+        [JsonIgnore]
+        private List<WorkItem> _workItems = new List<WorkItem>();
+
+        private object _lock = new object();
+
+        public Party(string name, string password, Player admin)
         {
-            Party party = new Party()
-            {
-                ID = Guid.NewGuid(),
-                Name = name,
-                Voting = false,
-                Admin = admin,
-                _hashedPass = Crypto.Hash(password)
-            };
+            Key = Guid.NewGuid();
+            Name = name;
+            Voting = false;
+            Admin = admin;
+
+            HashAlgorithm sha = SHA256.Create();
+
+            byte[] buffer = Encoding.ASCII.GetBytes(password);
+
+            _hashedPass = sha.ComputeHash(buffer);
 
             admin.SeatNumber = 1;
 
-            party.Members.Add(admin);
+            Members.Add(admin);
 
             for (int i = 2; i < 11; i++)
             {
-                party.Members.Add(Player.CreateInactive(i));
+                Members.Add(Player.CreateInactive(i));
             }
-
-            return party;
         }
 
-        public Result TryJoin(Player player)
+        public Result TryJoin(string password, Player player)
         {
-            if (Members.Count(x => x.IsActive) >= 10)
-                return new Result(false, "Party cannot have more thsan 10 members");
-
-            player.SeatNumber = GetRandomSeat();
-
-            if (Members.Any(x => x.SeatNumber == player.SeatNumber && !x.IsActive))
+            lock (_lock)
             {
-                Player member = Members.First(x => x.SeatNumber == player.SeatNumber && !x.IsActive);
+                if (!MatchPassword(password)) return new Result(false, "Password invalid");
 
-                Members.Remove(member);
+                if (Members.Count(x => x.IsActive) >= 10)
+                    return new Result(false, "Party cannot have more thsan 10 members");
+
+                player.SeatNumber = GetRandomSeat();
+
+                if (Members.Any(x => x.SeatNumber == player.SeatNumber && !x.IsActive))
+                {
+                    Player member = Members.First(x => x.SeatNumber == player.SeatNumber && !x.IsActive);
+
+                    Members.Remove(member);
+                }
+
+                player.PartyName = Name;
+
+                Members.Add(player);
+
+                OnUpdated.Invoke(this, this);
+
+                return new Result(true);
             }
-
-            Members.Add(player);
-
-            return new Result(true);
         }
 
-        public void TryAddItem(PokerItem item)
+        public Result TryAddWorkItem(string password, WorkItem item)
         {
-            PokerItem = item;
+            lock (_lock)
+            {
+                if (!MatchPassword(password)) return new Result(false, "Password invalid");
+
+                WorkItem = item;
+
+                _workItems.Add(item);
+
+                foreach (var player in Members)
+                {
+                    player.Reset();
+                }
+
+                Voting = true;
+
+                OnUpdated.Invoke(this, this);
+
+                return new Result(true);
+            }
         }
 
-        public bool MatchPassword(string password) => Crypto.Hash(password).ToString() == _hashedPass.ToString();
+        public Result TryVote(string password, Guid playerKey, string vote)
+        {
+            lock (_lock)
+            {
+                if (!MatchPassword(password)) return new Result(false, "Password invalid");
 
-        public int GetRandomSeat()
+                Player player = Members.FirstOrDefault(x => x.Key == playerKey);
+
+                if (player == null) return new Result(false, "Could not find the correct player");
+
+                player.SetVote(vote);
+
+                OnUpdated.Invoke(this, this);
+
+                return new Result(true);
+            }
+        }
+
+        public Result TryFlip(string password)
+        {
+            lock (_lock)
+            {
+                if (!MatchPassword(password)) return new Result(false, "Password invalid");
+
+                Flipped = !Flipped;
+
+                OnUpdated.Invoke(this, this);
+
+                return new Result(true);
+            }
+        }
+
+        private bool MatchPassword(string password)
+        {
+            byte[] hash1 = SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(password));
+
+            byte[] hash2 = _hashedPass;
+
+            return Encoding.ASCII.GetString(hash1) == Encoding.ASCII.GetString(hash2);
+        }
+
+        private int GetRandomSeat()
         {
             Random random = new Random();
 

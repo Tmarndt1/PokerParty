@@ -1,10 +1,10 @@
 import { Party } from "../models/Party";
 import { Guid } from "../utilitites/common";
-import PokerItem from "../models/PokerItem";
+import WorkItem from "../models/WorkItem";
 import { Player, CardSuit } from "../models/Player";
 
 export let fakeAdmin = new Player({
-    id: Guid(),
+    key: Guid(),
     partyName: "Fake party",
     username: "Player 1",
     isActive: true,
@@ -23,12 +23,31 @@ export let fakeAdmin = new Player({
 
 let members: Player[] = [ fakeAdmin ];
 
-for (let i = 2; i < 11; i++) {
+let seatsUsed: number[] = [fakeAdmin.seatNumber];
+
+function getRandomSeat(): number {
+    let seat: number =  Math.round(Math.random() * 10);
+
+    let maxIterations: number = 200;
+
+    while (true && --maxIterations > 0) {
+        if (!seatsUsed.includes(seat) && seat !== 1 && seat !== 0) {
+            seatsUsed.push(seat);
+            break;
+        }
+
+        seat = Math.round(Math.random() * 10);
+    }
+
+    return seat;
+}
+
+for (let i = 2; i < 8; i++) {
     let player = fakeAdmin.clone();
     player.username = "Player " + i,
-    player.id = Guid();
+    player.key = Guid();
     player.isAdmin = false;
-    player.seatNumber = i;
+    player.seatNumber = getRandomSeat();
     // player.voted = i % 2 == 0;
     player.voted = false;
     player.v5Count = Math.ceil(Math.random() * 10);
@@ -39,10 +58,15 @@ for (let i = 2; i < 11; i++) {
 }
 
 export let fakeParty = new Party({
-    id: Guid(),
+    key: Guid(),
     name: "BIT",
     members: members,
-    pokerItem: new PokerItem(),
-    itemHistory: [],
-    voting: false
+    workItem: new WorkItem({
+        key: "fake",
+        title: "title",
+        body: "body",
+        active: true
+    }),
+    voting: false,
+    flipped: true
 });

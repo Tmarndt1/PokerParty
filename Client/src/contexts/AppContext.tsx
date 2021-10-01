@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Player } from "../models/Player";
-import IModalData from "../interfaces/IModalData";
+import { IOverlay } from "../components/Overlay";
 import { Party } from "../models/Party";
+import { SignalRService } from "../services/SignalRService";
 
 export enum Theme {
     Dark,
@@ -13,15 +14,15 @@ export interface IAppContext {
     isAdmin: boolean;
     user: Player; 
     party: Party;
-    modal: IModalData;
-    login: (user: Player, party: Party, isAdmin: boolean) => void;
-    showModal: (body: JSX.Element | JSX.Element[], callback: (success: boolean) => void) => void;
-    closeModal: () => void;
+    modal: IOverlay;
+    signalR: SignalRService;
+    showOverlay: (body: JSX.Element | JSX.Element[], callback: (success: boolean) => void) => void;
+    hideOverlay: () => void;
     updateUser: (user: Player) => void;
 }
 
 const contextObject: IAppContext = {
-    theme: Theme.Light,
+    theme: Theme.Dark,
     isAdmin: false,
     user: null,
     party: null,
@@ -30,10 +31,10 @@ const contextObject: IAppContext = {
         body: null,
         callback: null,
     },
-    login: null,
-    showModal: null,
-    closeModal: null,
+    showOverlay: null,
+    hideOverlay: null,
     updateUser: null,
+    signalR: null
 };
 
 export const AppContext = React.createContext<IAppContext>(contextObject);

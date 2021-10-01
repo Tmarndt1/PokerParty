@@ -23,21 +23,19 @@
     {
         public T Data { get; set; }
 
-        public Result() { }
+        public Result(T data)
+        {
+            Data = data;
+        }
 
-        public Result(bool success)
+        public Result(T data, bool success) : this(data)
         {
             Success = success;
         }
 
-        public Result(bool success, string error) : this(success)
+        public Result(T data, bool success, string error) : this(data, success)
         {
             Error = error;
-        }
-
-        public Result(bool success, string error, T data) : this(success, error)
-        {
-            Data = data;
         }
     }
 }

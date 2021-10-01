@@ -6,18 +6,20 @@
     align-items: center;
     position: relative;
     animation: fadeIn 1s;
+    margin: auto;
 }
 
 #poker-table {
     margin: auto;
     min-width: 850px;
     width: calc(100% - 180px);
-    height: 400px;
+    height: 380px;
     background-color: #4aad4a;
     border-radius: 150px;
     position: relative;
     border: 15px solid #a95555;
     max-width: 1050px;
+    user-select: none;
 }
 
 #poker-table::before {
@@ -25,7 +27,7 @@
     border: 7px solid rgba(0, 0, 0, 0.1);
     display: block;
     width: calc(100% + 15px);
-    height: 415px;
+    height: 395px;
     border-radius: 150px;
     position: absolute;
     top: -15px;
@@ -245,6 +247,7 @@
     border: 1px solid black;
     border-radius: 5px;
     z-index: 30;
+    transition: all .5s ease;
 }
 
 .poker-card.is-user {
@@ -606,14 +609,18 @@
 
 .vote-cards-container {
     position: absolute;
-    bottom: 0;
+    bottom: 0px;
     left: -50px;
-    height: min-content;
-    width: min-content;
+    height: 67px;
+    width: 47px;
 }
 
 .vote-cards-inside-container {
     position: relative;
-    height: min-content;
-    width: min-content;
+    height: 65px;
+    width: 47px;
+}
+
+.vote-cards-inside-container.is-user {
+    cursor: pointer;
 }

@@ -1,29 +1,30 @@
 import * as React from "react";
 import { Player } from "../models/Player";
 import { IAppContext, AppContext } from "../contexts/AppContext";
-import PokerItem from "../models/PokerItem";
+import WorkItem from "../models/WorkItem";
 import { Party } from "../models/Party";
-import { SignalRService } from "../services/SignalRService";
 import { isNothing } from "../utilitites/isNothing";
 
-const cancelBtn = require("../public/images/cancel.png");
 const card = require("../public/images/card.png");
 
 interface IProps {
     party: Party;
     player: Player;
     isUser: boolean;
-    pokerItem: PokerItem;
-    voteHandler: Function;
+    pokerItem: WorkItem;
+    onVote: Function;
 };
 
 interface IState {
     party: Party;
     player: Player;
-    pokerItem: PokerItem;
+    pokerItem: WorkItem;
     voted: boolean;
 };
 
+/**
+ * Summary
+ */
 export default class PlayerComponent extends React.Component<IProps, IState> {
     public context: IAppContext;
     public static contextType = AppContext;
@@ -56,6 +57,8 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
 
         if (this.props.isUser && this.state.party.voting && !this.state.player.voted) cardsCss += " vote";
 
+        let cardsContainerCss: string = this.props.isUser ? "vote-cards-inside-container is-user" : "vote-cards-inside-container"; 
+
         return (
             <div id={id} className={!this.state.player.isActive ? "player inactive" : "player"}>
                 <div className="avatar">
@@ -67,9 +70,9 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
                 }
                 </div>
                 <div className="player-name">{this.state.player.username}</div>
-                <div className="vote-cards-container" draggable={false}>
-                    <div className="vote-cards-inside-container">
-                        <img src={card} className={(this.props.isUser ? cardsCss + " is-user" : cardsCss)} onClick={this.vote} ref={this.cardRef}/>
+                <div className="vote-cards-container" draggable={false} onClick={this.vote}>
+                    <div className={cardsContainerCss}>
+                        <img src={card} className={cardsCss} ref={this.cardRef}/>
                         <img src={card} className={cardsCss}/>
                         <img src={card} className={cardsCss} style={{boxShadow: "0 0 3px white"}}/>
                     </div>
@@ -111,14 +114,14 @@ export default class PlayerComponent extends React.Component<IProps, IState> {
         if (!this.props.isUser) return;
         if (this.state.voted === true || isNothing(this.state.pokerItem) === true) return;
         this.cardRef.current.classList.remove("vote");
-        this.props.voteHandler();
+        this.props.onVote();
     }
 
     private remove = (): void => {
         if (confirm("Are you sure you want to remove this player?")) {
-            SignalRService.getInstance().removeVoter({
-                playerId: this.state.player.id,
-                partyId: this.state.party.id
+            this.context.signalR.removeVoter({
+                playerId: this.state.player.key,
+                partyId: this.state.party.key
             });
         }
     }

@@ -13,8 +13,8 @@ namespace Poker.Library.Models
 
     public class Player
     {
-        [JsonProperty("id")]
-        public Guid ID { get; set; }
+        [JsonProperty("key")]
+        public Guid Key { get; set; }
 
         [JsonProperty("username")]
         public string Username { get; set; }
@@ -33,9 +33,6 @@ namespace Poker.Library.Models
 
         [JsonProperty("seatNumber")]
         public int SeatNumber { get; set; }
-
-        [JsonProperty("themeColor")]
-        public string Theme { get; set; }
 
         [JsonProperty("v5Count")]
         public int V5Count
@@ -103,32 +100,50 @@ namespace Poker.Library.Models
         [JsonIgnore]
         public string ConnectionId { get; set; }
 
-        public static Player Factory(string username, string connectionId)
+        [JsonIgnore]
+        public string PartyName { get; set; }
+
+        public Player(string username, string connectionId, bool isAdmin)
         {
-            return Factory(username, connectionId, false);
+            Key = Guid.NewGuid();
+            Username = username;
+            IsActive = true;
+            IsAdmin = isAdmin;
+            ConnectionId = connectionId;
+            SeatNumber = isAdmin ? 1 : -1;
         }
 
-        public static Player Factory(string username, string connectionId, bool isAdmin)
+        public void SetVote(string vote)
         {
-            return new Player()
-            {
-                ID = Guid.NewGuid(),
-                Username = username,
-                IsActive = true,
-                IsAdmin = isAdmin,
-                ConnectionId = connectionId
-            };
+            Random random = new Random();
+            Voted = true;
+            Vote = vote;
+            V5Count = random.Next(1, 9);
+            V10Count = random.Next(1, 9);
+            V25Count = random.Next(1, 7);
+            V50Count = random.Next(1, 4);
+            VoteSuit = (CardSuit)random.Next(0, 3);
         }
+        
 
         public static Player CreateInactive(int seatNumber)
         {
-            return new Player()
+            return new Player("Player" + seatNumber, null, false)
             {
-                ID = Guid.NewGuid(),
+                Key = Guid.NewGuid(),
                 IsActive = false,
                 SeatNumber = seatNumber,
                 Username = "",
             };
+        }
+
+        public void Reset()
+        {
+            V5Count = 0;
+            V10Count = 0;
+            V25Count = 0;
+            V50Count = 0;
+            Voted = false;
         }
     }
 }

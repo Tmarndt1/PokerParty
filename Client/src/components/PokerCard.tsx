@@ -39,9 +39,7 @@ export default class PokerCard extends React.Component<IProps, IState> {
                         <img src={card} className="poker-card-front"/>
                     </div>
                     <div className="back">
-                    {
-                        this.getBackOfCard()
-                    }
+                    { this.getBackOfCard() }
                     </div>
                 </div>
             </div>

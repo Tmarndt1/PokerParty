@@ -1,16 +1,15 @@
 import * as React from "react";
 import { Player } from "../models/Player";
-import PokerItem from "../models/PokerItem";
 import { IAppContext, AppContext } from "../contexts/AppContext";
 import CardSuit from "../enums/CardSuit";
 import IVoteRequest from "../interfaces/IVoteRequest";
-import { SignalRService } from "../services/SignalRService";
+import { Party } from "../models/Party";
 
 interface IProps {
-    partyId: string;
-    closeHandler: Function;
+    party: Party;
     user: Player;
-    pokerItem: PokerItem;
+    password: string;
+    onClose: () => any;
 };
 
 interface IState {
@@ -36,7 +35,7 @@ export default class VoteComponent extends React.Component<IProps, IState> {
         
         return (
             <React.Fragment>
-                <div id="close-vote" onClick={() => this.props.closeHandler()}>
+                <div id="close-vote" onClick={() => this.props.onClose()}>
                     <i className="fas fa-times"></i>
                 </div>
                 <div id="vote-container">
@@ -83,26 +82,18 @@ export default class VoteComponent extends React.Component<IProps, IState> {
         );
     }
 
-    private vote = (vote: string): void => {
-        let voteRequest: IVoteRequest = {
-            partyId: this.props.partyId,
-            partyName: this.props.user.partyName,
-            playerId: this.props.user.id,
-            vote: vote,
-            v5Count: Math.ceil(Math.random() * 9),
-            v10Count: Math.ceil(Math.random() * 9),
-            v25Count: Math.ceil(Math.random() * 7),
-            v50Count: Math.ceil(Math.random() * 3),
-            voteSuit: Math.floor(Math.random() * 4),
+    private vote = async (vote: string): Promise<void> => {
+        try {
+            let result = await this.context.signalR.submitVote({
+                partyName: this.props.party?.name,
+                password: this.props.password,
+                playerKey: this.props.user.key,
+                vote: vote
+            });
+
+            this.props.onClose();
+        } catch (error) {
+            this.props.onClose();
         }
-        
-        SignalRService.getInstance().vote(voteRequest)
-        .then(res => {
-            if (!res) return;
-            this.props.closeHandler();
-        })
-        .catch(() => {
-            this.props.closeHandler();
-        });
     }
 }

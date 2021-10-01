@@ -1,46 +1,39 @@
 import { Guid } from "../utilitites/common";
 import { Player, IPlayer } from "../models/Player";
-import PokerItem, { IPokerItem } from "./PokerItem";
+import WorkItem, { IWorkItem } from "./WorkItem";
 import { isNothing } from "../utilitites/isNothing";
 
-let _password: string = null;
-let _admin: Player = null;
-
 export interface IParty {
-    id: string;
+    key: string;
     name: string;
     members: IPlayer[];
-    pokerItem: IPokerItem;
-    itemHistory: IPokerItem[];
+    workItem: IWorkItem;
     voting: boolean;
+    flipped: boolean;
 }
 
 export class Party implements IParty {
-    public id: string = Guid();
+    public key: string = Guid();
     public name: string;
     public members: Player[] = [];
-    public pokerItem: PokerItem = null;
-    public itemHistory: PokerItem[] = [];
+    public workItem: WorkItem = null;
     public voting: boolean = false;
+    public flipped: boolean = false;
 
     constructor(json: IParty = null) {
         if (isNothing(json)) return;
 
-        this.id = json.id;
-        this.name = json.name;
-        this.voting = json.voting;
-        
-        this.pokerItem = !isNothing(json.pokerItem) ? new PokerItem(json.pokerItem) : null;
+        this.key = json.key ?? "";
+        this.name = json.name ?? "";
+        this.voting = json.voting ?? false;
+        this.flipped = json.flipped ?? false;
+        this.workItem = new WorkItem(json?.workItem);
 
-        if (json.members instanceof Array)
-            this.members = json.members.map(x => new Player(x));
-
-        if (json.itemHistory instanceof Array)
-            this.itemHistory = json.itemHistory.map(x => new PokerItem(x));
+        if (json.members instanceof Array) this.members = json.members.map(x => new Player(x));
     }
 
     public join = (player: Player): boolean => {
-        if (this.members.some(x => x.id == player.id)) return false;
+        if (this.members.some(x => x.key == player.key)) return false;
 
         for (let i = 0; i < 8; i++) {
             if (this.members[i].isActive == true) continue;
@@ -61,10 +54,9 @@ export class Party implements IParty {
 
     public setVoting = (voting: boolean) => this.voting = voting;
 
-    public setItem = (item: PokerItem): boolean => {
+    public setItem = (item: WorkItem): boolean => {
         if (isNothing(item)) return false;
-        this.itemHistory.push(item);
-        this.pokerItem = item;
+        this.workItem = item;
         return true;
     }
 }
