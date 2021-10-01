@@ -8,7 +8,7 @@ export let fakeAdmin = new Player({
     partyName: "Fake party",
     username: "Player 1",
     isActive: true,
-    vote: null,
+    vote: "5",
     voted: true,
     isAdmin: true,
     connectionId: "",

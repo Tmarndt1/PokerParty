@@ -39,7 +39,9 @@ export default class PokerTable extends React.Component<IProps, IState> {
                         <div id="cards-place">
                         {
                             this.props.party.members.filter(x => x.isActive && x.voted).map(player => {
-                                return <PokerCard key={player.key} player={player} flipped={this.props.party?.flipped}/>
+                                return (
+                                    <PokerCard key={player.key} player={player} flipped={this.props.party?.flipped}/>
+                                )
                             })
                         }
                         {/* TODO HIDE when not voting */}
