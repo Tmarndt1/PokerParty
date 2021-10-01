@@ -31,7 +31,10 @@ export enum SignalREvent {
     Flip = "Flip"
 }
 
-export type ISubscriber = [SignalREvent, Function]; // SocketEvent, Callback Function, SubscriberID
+export interface ISubscriber {
+    event: SignalREvent;
+    callback: (args?: any) => any;
+}
 
 export class SignalRService {
     public isConnected: boolean = false;
@@ -47,7 +50,7 @@ export class SignalRService {
         })
         .build();
 
-        this.setupClientFunctions();
+        this.listen();
     }
 
     public static getInstance(): SignalRService {
@@ -58,8 +61,11 @@ export class SignalRService {
         }
     }
 
-    public subscribe = (event: SignalREvent, callback: Function): void => {
-        this._subscribers.push([event, callback]);
+    public subscribe = (event: SignalREvent, callback: (args?: any) => any): void => {
+        this._subscribers.push({
+            event: event, 
+            callback: callback
+        });
     }
 
     public connect = (): void => {
@@ -211,46 +217,46 @@ export class SignalRService {
         });
     }
 
-    private setupClientFunctions = (): void => {
+    private listen = (): void => {
         this._connection.on(SignalREvent.ItemSubmmitted, (args: IWorkItem) => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.ItemSubmmitted) subscriber[1](args);
+                if (subscriber.event === SignalREvent.ItemSubmmitted) subscriber.callback(args);
             });
         });
 
         this._connection.on(SignalREvent.PartyUpdate, (party: IParty) => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.PartyUpdate) subscriber[1](party);
+                if (subscriber.event === SignalREvent.PartyUpdate) subscriber.callback(party);
             });
         });
 
         this._connection.on(SignalREvent.PartyClosed, (args: any) => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.PartyClosed) subscriber[1](args);
+                if (subscriber.event === SignalREvent.PartyClosed) subscriber.callback(args);
             });
         });
 
         this._connection.on(SignalREvent.Reset, (party: IParty) => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.Reset) subscriber[1](party);
+                if (subscriber.event === SignalREvent.Reset) subscriber.callback(party);
             });
         });
 
         this._connection.on(SignalREvent.OtherClosed, () => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.OtherClosed) subscriber[1]();
+                if (subscriber.event === SignalREvent.OtherClosed) subscriber.callback();
             });
         });
         
         this._connection.on(SignalREvent.RevoteItem, (party: IParty) => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.RevoteItem) subscriber[1](party);
+                if (subscriber.event === SignalREvent.RevoteItem) subscriber.callback(party);
             });
         });
 
         this._connection.on(SignalREvent.PlayerUpdate, (player: IPlayer) => {
             this._subscribers.forEach((subscriber: ISubscriber) => {
-                if (subscriber[0] === SignalREvent.PlayerUpdate) subscriber[1](player);
+                if (subscriber.event === SignalREvent.PlayerUpdate) subscriber.callback(player);
             });
         });
     }
