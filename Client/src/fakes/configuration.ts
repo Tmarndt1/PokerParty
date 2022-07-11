@@ -59,7 +59,7 @@ for (let i = 2; i < 8; i++) {
 
 export let fakeParty = new Party({
     key: Guid(),
-    name: "BIT",
+    name: "Team Name",
     members: members,
     workItem: new WorkItem({
         key: "fake",
